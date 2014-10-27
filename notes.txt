@@ -1,0 +1,94 @@
+Hantek HDG2000
+
+Components
+
+J2: RJ-45 Ethernet
+J3: MicroSD slot
+J4: BNC (10 MHz in, FPGA T8)
+J5: BNC (CH2)
+J6: BNC (CH1)
+J7: BNC (Mod in)
+J8: BNC (10 MHz out)
+J9: BNC (Sync out)
+J10: BNC (Trigger, slow counter)
+J11: BNC (Fast counter)
+J702: FFC 10 pin (Keyboard)
+J800: FFC 4 pin (unpopulated, touchscreen?)
+J801: 1x5 header (SoC UART)
+J900: FFC 40 pin (Display)
+J901: 2x5 header (SoC JTAG?)
+J902: USB host
+J904: USB device
+JP3: 1x6 0.1 inch header (U5 JTAG)
+K1: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+K2: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+K3: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+K4: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+K5: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+K6: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+U3: Samsung S3C2416XH-40 SoC (ARM9 MCU, user interface)
+U5: Xilinx XC6SLX16CSG324 FPGA (DSP and front end control)
+U8: Micron MT47H64M16HR-25E:H 64Mx16 DDR2 SDRAM (FPGA)
+U12: Micron MT47H64M16HR-25E:H 64Mx16 DDR2 SDRAM (FPGA)
+U24: 74HC595 shift register (front end relay driver)
+U25: LMX5080 prescaler (fast counter)
+U26: 74HC595 shift register (front end relay driver)
+U27: NXP 74HC4051 8-channel analog mux
+U28: TI OPA140
+U30: Unknown, presumed ADC
+U32: Micron MT47H32M16HR-25E:G DRAM 32Mx16 DDR2 SDRAM (SoC)
+U33: Analog Devices AD9747BCPZ 2 channel 16 bit 250 Msps TxDAC
+U38: Samsung K9F1G08U0D 128Mx8 Flash (SoC)
+U39: Davicom DM9000 100 Mbit ISA Ethernet controller (MAC and PHY)
+Y1: 48 MHz osc for SoC
+Y2: osc for DM9000
+U3: 12 MHz osc for SoC
+X2: 10 MHz osc for FPGA (FPGA pin T10)
+X3: 10 MHz osc for FPGA (alternate)
+X4: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+X5: Fujitsu FTR-B3GB4.5Z-B10 DPDT 4.5v latching relay
+
+Pinouts:
+
+JP3: JTAG for U5
+From marking end, +3V3, TCK, TDI, TDO, TMS, GND
+
+Isolation/FPGA-SoC interconnection (U14/U13/P11)
+
+FPGA pin - SoC pin
+
+U14 mark
+
+GND (R333)
+
+(all RA10)
+to FPGA
+N9, R13 DIN - unknown
+P12, R15 CCLK - unknown
+P8 - unknown
+GND - GND
+
+U13 mark
+
+GND (R334?)
+
+(all RA9?)
+to SoC
+M10 - unknown
+V17 DONE - unknown
+U3 INIT - unknown
+V2 PROGRAM_B_2 - unknown
+
++3V3 (R???)
+
++3V3 (R???)
+GND (R???)
++1V8 (R???)
+GND (R???)
++5V (R???)
+
+J801: SoC UART
+From marking: N/C, RX, TX, GND, +3V3
+
+
+
