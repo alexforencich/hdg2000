@@ -1,0 +1,12 @@
+# UCF file for clock module domain crossing constraints
+
+NET clk_10mhz_int TNM = ffs_10mhz_int;
+NET clk_10mhz_ext TNM = ffs_10mhz_ext;
+NET "clock_inst/clk_10mhz_ext_bufg" TNM = ffs_10mhz_ext_bufg;
+NET "clock_inst/clk_250mhz_int" TNM = ffs_250mhz_int;
+NET "clock_inst/clk_250mhz_ext" TNM = ffs_250mhz_ext;
+NET "clock_inst/clk_250mhz_to_dcm" TNM = ffs_250mhz_to_dcm;
+TIMESPEC TS_10mhz_ext_to_250mhz_int = FROM ffs_10mhz_ext_bufg TO ffs_250mhz_int 10 ns;
+TIMESPEC TS_250mhz_ext_to_250mhz_int = FROM ffs_250mhz_ext TO ffs_250mhz_int 10 ns;
+TIMESPEC TS_250mhz_int_to_250mhz_to_dcm = FROM ffs_250mhz_int TO ffs_250mhz_to_dcm 10 ns;
+TIMESPEC TS_250mhz_ext_to_250mhz_to_dcm = FROM ffs_250mhz_ext TO ffs_250mhz_to_dcm 10 ns;

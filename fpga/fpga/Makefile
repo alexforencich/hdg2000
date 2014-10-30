@@ -11,11 +11,12 @@ PROM = xcf32p
 # Files for synthesis
 SYN_FILES = rtl/fpga.v
 SYN_FILES += rtl/clock.v
+SYN_FILES += rtl/reset_stretch.v
 SYN_FILES += coregen/dcm_i10_o250/dcm_i10_o250.v
 
 # UCF files
 UCF_FILES = fpga.ucf
-#UCF_FILES += ....ucf
+UCF_FILES += clock.ucf
 
 # NGC paths for ngdbuild
 NGC_PATHS = coregen/dcm_i10_o250
