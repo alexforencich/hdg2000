@@ -118,7 +118,6 @@ module fpga
 );
 
 wire clk_250mhz_int;
-wire clk_250mhz_ext;
 
 wire clk_250mhz;
 wire clk_10mhz;
@@ -126,11 +125,12 @@ wire clk_10mhz;
 clock
 clock_inst
 (
+	.reset_in(0),
+
 	.clk_10mhz_int(clk_10mhz_int),
 	.clk_10mhz_ext(clk_10mhz_ext),
 
 	.clk_250mhz_int(clk_250mhz_int),
-	.clk_250mhz_ext(clk_250mhz_ext),
 
 	.clk_250mhz(clk_250mhz),
 	.clk_10mhz(clk_10mhz)
