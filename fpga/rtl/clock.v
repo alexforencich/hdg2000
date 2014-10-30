@@ -79,6 +79,9 @@ when it is stable.
                 ,-------DCM--------,
                 |                  |
             clk_250mhz         clk_10mhz
+                |                  |
+                V                  V
+          DSP, DDS, DAC         REF out
 
 
 */
@@ -92,155 +95,183 @@ wire clk_10mhz_ext_bufg;
 
 wire clk_250mhz_int_dcm;
 wire clk_250mhz_ext_dcm;
+wire clk_250mhz_ext;
 
 wire clk_250mhz_to_dcm;
 wire clk_250mhz_out;
 wire clk_10mhz_out;
 
 // resets
-reg rst_10mhz_int_reg = 1;
-reg rst_250mhz_int_reg = 1;
-reg rst_250mhz_out_reg = 1;
-reg rst_10mhz_out_reg = 1;
+wire rst_10mhz_int;
+wire rst_10mhz_ext;
+wire rst_250mhz_ext;
 
 // clock management
 wire clk_250mhz_int_dcm_reset;
 wire clk_250mhz_int_dcm_locked;
 wire [7:0] clk_250mhz_int_dcm_status;
-wire clk_250mhz_int_dcm_stopped = clk_250mhz_int_dcm_status[1];
+wire clk_250mhz_int_dcm_clkin_stopped = clk_250mhz_int_dcm_status[1];
+wire clk_250mhz_int_dcm_clkfx_stopped = clk_250mhz_int_dcm_status[2];
 
 wire clk_250mhz_ext_dcm_reset;
 wire clk_250mhz_ext_dcm_locked;
 wire [7:0] clk_250mhz_ext_dcm_status;
-wire clk_250mhz_ext_dcm_stopped = clk_250mhz_ext_dcm_status[1];
+wire clk_250mhz_ext_dcm_clkin_stopped = clk_250mhz_ext_dcm_status[1];
+wire clk_250mhz_ext_dcm_clkfx_stopped = clk_250mhz_ext_dcm_status[2];
 
 wire clk_250mhz_out_dcm_reset;
 wire clk_250mhz_out_dcm_locked;
 wire [7:0] clk_250mhz_out_dcm_status;
-wire clk_250mhz_out_dcm_stopped = clk_250mhz_out_dcm_status[1];
+wire clk_250mhz_out_dcm_clkin_stopped = clk_250mhz_out_dcm_status[1];
+wire clk_250mhz_out_dcm_clkfx_stopped = clk_250mhz_out_dcm_status[2];
 
-reg clk_out_select = 0;
+wire ref_freq_valid;
+
+wire clk_out_select;
+
+assign ext_clock_selected = clk_out_select;
+
+reg reset_output_dcm = 0;
 
 // reset logic
 
 // 10mhz_int clock domain reset
-reg [3:0] rst_10mhz_int_count_reg = 0;
+reset_stretch #(.N(4)) rst_10mhz_int_inst (
+    .clk(clk_10mhz_int_bufg),
+    .rst_in(reset_in),
+    .rst_out(rst_10mhz_int)
+);
 
-// hold reset for 16 clock cyles
-always @(posedge clk_10mhz_int_bufg or posedge reset_in) begin
-    if (reset_in) begin
-        // reset
-        rst_10mhz_int_count_reg <= 0;
-        rst_10mhz_int_reg <= 1;
-    end else begin
-        if (&rst_10mhz_int_count_reg) begin
-            rst_10mhz_int_reg <= 0;
-        end else begin
-            rst_10mhz_int_reg <= 1;
-            rst_10mhz_int_count_reg <= rst_10mhz_int_count_reg + 1;
-        end
-    end
-end
+// 10mhz_ext clock domain reset
+reset_stretch #(.N(4)) rst_10mhz_ext_inst (
+    .clk(clk_10mhz_ext_bufg),
+    .rst_in(reset_in | ~ref_freq_valid),
+    .rst_out(rst_10mhz_ext)
+);
 
 // 250mhz_int clock domain reset
-reg [3:0] rst_250mhz_int_count_reg = 0;
-// reset 250mhz_int clock domain if parent clock domain is in reset or DCM is not locked input clock is stopped
-wire rst_250mhz_int_in = rst_10mhz_int_reg | ~clk_250mhz_int_dcm_locked | clk_250mhz_int_dcm_stopped;
-// reset 250mhz_int DCM if parent clock domain is in reset or DCM is not locked and input clock is stopped
-assign clk_250mhz_int_dcm_reset = rst_10mhz_int_reg | (~clk_250mhz_int_dcm_locked & clk_250mhz_int_dcm_stopped);
+reset_stretch #(.N(4)) rst_250mhz_int_inst (
+    .clk(clk_250mhz_int),
+    .rst_in(rst_10mhz_int | ~clk_250mhz_int_dcm_locked | clk_250mhz_int_dcm_clkin_stopped),
+    .rst_out(rst_250mhz_int)
+);
 
-assign rst_250mhz_int = rst_250mhz_int_reg;
-
-// hold reset for 16 clock cyles
-always @(posedge clk_250mhz_int or posedge rst_250mhz_int_in) begin
-    if (rst_250mhz_int_in) begin
-        // reset
-        rst_250mhz_int_count_reg <= 0;
-        rst_250mhz_int_reg <= 1;
-    end else begin
-        if (&rst_250mhz_int_count_reg) begin
-            rst_250mhz_int_reg <= 0;
-        end else begin
-            rst_250mhz_int_reg <= 1;
-            rst_250mhz_int_count_reg <= rst_250mhz_int_count_reg + 1;
-        end
-    end
-end
+reset_stretch #(.N(3)) rst_250mhz_int_dcm_inst (
+    .clk(clk_10mhz_int_bufg),
+    .rst_in(rst_10mhz_int | (~clk_250mhz_int_dcm_locked & clk_250mhz_int_dcm_clkin_stopped) | clk_250mhz_int_dcm_clkfx_stopped),
+    .rst_out(clk_250mhz_int_dcm_reset)
+);
 
 // 250mhz_ext clock domain reset
-// reg [15:0] rst_250mhz_ext_count_reg = 0;
-// // reset 250mhz_ext clock domain if parent clock domain is in reset or DCM is not locked input clock is stopped
-// wire rst_250mhz_ext_in = rst_10mhz_ext_reg | ~clk_250mhz_ext_dcm_locked | clk_250mhz_ext_dcm_stopped;
-// reset 250mhz_ext DCM if parent clock domain is in reset or DCM is not locked and input clock is stopped
-assign clk_250mhz_ext_dcm_reset = rst_10mhz_int_reg | (~clk_250mhz_ext_dcm_locked & clk_250mhz_ext_dcm_stopped);
+reset_stretch #(.N(4)) rst_250mhz_ext_inst (
+    .clk(clk_250mhz_ext),
+    .rst_in(rst_10mhz_ext | ~clk_250mhz_ext_dcm_locked | clk_250mhz_ext_dcm_clkin_stopped),
+    .rst_out(rst_250mhz_ext)
+);
 
-// // hold reset for 16 clock cyles
-// always @(posedge clk_250mhz_ext or posedge rst_250mhz_ext_in) begin
-//     if (rst_250mhz_ext_in) begin
-//         // reset
-//         rst_250mhz_ext_reg <= 1;
-//         rst_250mhz_ext_count_reg <= 0;
-//     end else begin
-//         if (&rst_250mhz_ext_count_reg) begin
-//             rst_250mhz_ext_reg <= 0;
-//         end else begin
-//             rst_250mhz_ext_reg <= 1;
-//             rst_250mhz_ext_count_reg <= rst_250mhz_ext_count_reg + 1;
-//         end
-//     end
-// end
+reset_stretch #(.N(3)) rst_250mhz_ext_dcm_inst (
+    .clk(clk_10mhz_ext_bufg),
+    .rst_in(rst_10mhz_ext | (~clk_250mhz_ext_dcm_locked & clk_250mhz_ext_dcm_clkin_stopped) | clk_250mhz_ext_dcm_clkfx_stopped),
+    .rst_out(clk_250mhz_ext_dcm_reset)
+);
 
 // 250mhz_out clock domain reset
-reg [3:0] rst_250mhz_out_count_reg = 0;
-// reset 250mhz_out clock domain if parent clock domain is in reset or DCM is not locked input clock is stopped
-// TODO parent reset mux
-wire rst_250mhz_out_in = rst_250mhz_int_reg | ~clk_250mhz_out_dcm_locked | clk_250mhz_out_dcm_stopped;
-// reset 250mhz_out DCM if parent clock domain is in reset or DCM is not locked and input clock is stopped
-assign clk_250mhz_out_dcm_reset = rst_250mhz_int_reg | (~clk_250mhz_out_dcm_locked & clk_250mhz_out_dcm_stopped);
+reset_stretch #(.N(4)) rst_250mhz_out_inst (
+    .clk(clk_250mhz_out),
+    .rst_in((clk_out_select ? rst_250mhz_ext : rst_250mhz_int) | ~clk_250mhz_out_dcm_locked | clk_250mhz_out_dcm_clkin_stopped),
+    .rst_out(rst_250mhz)
+);
 
-assign rst_250mhz = rst_250mhz_out_reg;
-
-// hold reset for 16 clock cyles
-always @(posedge clk_250mhz_out or posedge rst_250mhz_out_in) begin
-    if (rst_250mhz_out_in) begin
-        // reset
-        rst_250mhz_out_count_reg <= 0;
-        rst_250mhz_out_reg <= 1;
-    end else begin
-        if (&rst_250mhz_out_count_reg) begin
-            rst_250mhz_out_reg <= 0;
-        end else begin
-            rst_250mhz_out_reg <= 1;
-            rst_250mhz_out_count_reg <= rst_250mhz_out_count_reg + 1;
-        end
-    end
-end
+reset_stretch #(.N(3)) rst_250mhz_out_dcm_inst (
+    .clk(clk_250mhz_to_dcm),
+    .rst_in((clk_out_select ? rst_250mhz_ext : rst_250mhz_int) | reset_output_dcm | (~clk_250mhz_out_dcm_locked & clk_250mhz_out_dcm_clkin_stopped) | clk_250mhz_out_dcm_clkfx_stopped),
+    .rst_out(clk_250mhz_out_dcm_reset)
+);
 
 // 10mhz clock domain reset
-reg [3:0] rst_10mhz_out_count_reg = 0;
+reset_stretch #(.N(4)) rst_10mhz_out_inst (
+    .clk(clk_10mhz),
+    .rst_in((clk_out_select ? rst_250mhz_ext : rst_250mhz_int) | ~clk_250mhz_out_dcm_locked | clk_250mhz_out_dcm_clkin_stopped),
+    .rst_out(rst_10mhz)
+);
 
-assign rst_10mhz = rst_10mhz_out_reg;
+// Source switching logic
+reg ref_clk_src_reg = 0;
+reg [2:0] ref_clk_sync_reg = 0;
+reg ref_clk_reg = 0;
+reg ref_clk_last_reg = 0;
+reg [7:0] ref_freq_gate_reg = 0;
+reg [7:0] ref_freq_count_reg = 0;
+reg [2:0] ref_freq_valid_count_reg = 0;
+reg ref_freq_valid_reg = 0;
 
-// hold reset for 16 clock cyles
-always @(posedge clk_10mhz_out or posedge rst_250mhz_out_in) begin
-    if (rst_250mhz_out_in) begin
+assign ref_freq_valid = ref_freq_valid_reg;
+
+reg clk_out_select_reg = 0;
+
+assign clk_out_select = clk_out_select_reg;
+
+always @(posedge clk_10mhz_ext_bufg) begin
+    ref_clk_src_reg <= ~ref_clk_src_reg;
+end
+
+always @(posedge clk_250mhz_int) begin
+    ref_clk_sync_reg <= {ref_clk_sync_reg[1:0], ref_clk_src_reg};
+end
+
+always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
+    if (rst_250mhz_int) begin
         // reset
-        rst_10mhz_out_count_reg <= 0;
-        rst_10mhz_out_reg <= 1;
+        ref_clk_reg <= 0;
+        ref_clk_last_reg <= 0;
+        ref_freq_gate_reg <= 0;
+        ref_freq_count_reg <= 0;
+        ref_freq_valid_count_reg <= 0;
+        ref_freq_valid_reg <= 0;
+        reset_output_dcm <= 0;
     end else begin
-        if (&rst_10mhz_out_count_reg) begin
-            rst_10mhz_out_reg <= 0;
+        ref_clk_reg <= ref_clk_sync_reg;
+        ref_clk_last_reg <= ref_clk_reg;
+
+        ref_freq_gate_reg <= ref_freq_gate_reg + 1;
+
+        // measure edge rate of reference signal
+        // count edges
+        if (ref_clk_reg ^ ref_clk_last_reg) begin
+            ref_freq_count_reg <= ref_freq_count_reg + 1;
+        end
+
+        // gate every 256 cycles and check edge count
+        if (ref_freq_gate_reg == 0) begin
+            ref_freq_count_reg <= 0;
+
+            // 10 MHz should be 10.24 cycles, allow one cycle window
+            // 4 us (250 MHz) * 256 (gate) / 100 us (10 MHz) = 10.24 cycles
+            if (ref_freq_count_reg >= 8 & ref_freq_count_reg <= 12) begin
+                if (&ref_freq_valid_count_reg) begin
+                    ref_freq_valid_reg <= 1;
+                end else begin
+                    ref_freq_valid_count_reg <= ref_freq_valid_count_reg + 1;
+                end
+            end else begin
+                ref_freq_valid_count_reg <= 0;
+                ref_freq_valid_reg <= 0;
+            end
+        end
+
+        reset_output_dcm <= 0;
+
+        if (ref_freq_valid_reg) begin
+            if (~rst_250mhz_ext) begin
+                clk_out_select_reg <= 1;
+                reset_output_dcm <= ~clk_out_select_reg;
+            end
         end else begin
-            rst_10mhz_out_reg <= 1;
-            rst_10mhz_out_count_reg <= rst_10mhz_out_count_reg + 1;
+            clk_out_select_reg <= 0;
+            reset_output_dcm <= clk_out_select_reg;
         end
     end
 end
-
-
-// Source switching logic
-// TODO
-
 
 // clock management components
 
@@ -354,8 +385,18 @@ clk_250mhz_int_bufg_inst
     .O(clk_250mhz_int)
 );
 
+BUFG
+clk_250mhz_ext_bufg_inst
+(
+    .I(clk_250mhz_ext_dcm),
+    .O(clk_250mhz_ext)
+);
+
 // Clock mux for reference selection
-BUFGMUX
+BUFGMUX #
+(
+    .CLK_SEL_TYPE("ASYNC")
+)
 clk_250mhz_to_pll_inst
 (
     .I0(clk_250mhz_int_dcm),

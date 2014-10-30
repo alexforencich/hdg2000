@@ -43,13 +43,15 @@ wire rst_250mhz;
 wire clk_10mhz;
 wire rst_10mhz;
 
+wire ext_clock_selected;
+
 reg clk_10mhz_ext_enable = 0;
 
 always begin : clock10MHz
     clk_10mhz_int = 1'b1;
-    #100;
+    #101;
     clk_10mhz_int = 1'b0;
-    #100;
+    #101;
 end
 
 always begin : clock10MHz_ext
@@ -67,13 +69,19 @@ initial begin : stimulus
     #500; @(posedge clk_10mhz_int);
 
     // wait for inernal clock to lock
-    #10000;
+    #20000;
 
     // enable external clock
     clk_10mhz_ext_enable <= 1;
 
     // wait for external clock to lock and clock switchover
-    #10000;
+    #50000;
+
+    // disable external clock
+    clk_10mhz_ext_enable <= 0;
+
+    // wait for clock switchover
+    #20000;
 
     $finish;
 end
@@ -81,6 +89,7 @@ end
 clock
 UUT (
     .reset_in(reset_in),
+
     .clk_10mhz_int(clk_10mhz_int),
     .clk_10mhz_ext(clk_10mhz_ext),
 
@@ -90,7 +99,9 @@ UUT (
     .clk_250mhz(clk_250mhz),
     .rst_250mhz(rst_250mhz),
     .clk_10mhz(clk_10mhz),
-    .rst_10mhz(rst_10mhz)
+    .rst_10mhz(rst_10mhz),
+
+    .ext_clock_selected(ext_clock_selected)
 );
 
 endmodule
