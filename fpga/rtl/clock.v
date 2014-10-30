@@ -66,7 +66,7 @@ when it is stable.
                 |                  +---> counter --> threshold/hyst.
                 |                  |                        |
                 V                  V                        |
-               DCM                DCM                       |
+           DCM_CLKGEN         DCM_CLKGEN                    |
                 |                  |                        |
           clk_250mhz_int     clk_250mhz_ext                 |
                 |                  |                        |
@@ -76,7 +76,7 @@ when it is stable.
               \______________________/ <--------------------+
                          |
                          V
-                ,-------DCM--------,
+                ,------DCM_SP------,
                 |                  |
             clk_250mhz         clk_10mhz
                 |                  |
@@ -110,14 +110,12 @@ wire rst_250mhz_ext;
 wire clk_250mhz_int_dcm_reset;
 wire clk_250mhz_int_dcm_locked;
 wire [7:0] clk_250mhz_int_dcm_status;
-wire clk_250mhz_int_dcm_clkin_stopped = clk_250mhz_int_dcm_status[1];
-wire clk_250mhz_int_dcm_clkfx_stopped = clk_250mhz_int_dcm_status[2];
+wire clk_250mhz_int_dcm_clkfx_stopped = clk_250mhz_int_dcm_status[1];
 
 wire clk_250mhz_ext_dcm_reset;
 wire clk_250mhz_ext_dcm_locked;
 wire [7:0] clk_250mhz_ext_dcm_status;
-wire clk_250mhz_ext_dcm_clkin_stopped = clk_250mhz_ext_dcm_status[1];
-wire clk_250mhz_ext_dcm_clkfx_stopped = clk_250mhz_ext_dcm_status[2];
+wire clk_250mhz_ext_dcm_clkfx_stopped = clk_250mhz_ext_dcm_status[1];
 
 wire clk_250mhz_out_dcm_reset;
 wire clk_250mhz_out_dcm_locked;
@@ -152,26 +150,26 @@ reset_stretch #(.N(4)) rst_10mhz_ext_inst (
 // 250mhz_int clock domain reset
 reset_stretch #(.N(4)) rst_250mhz_int_inst (
     .clk(clk_250mhz_int),
-    .rst_in(rst_10mhz_int | ~clk_250mhz_int_dcm_locked | clk_250mhz_int_dcm_clkin_stopped),
+    .rst_in(rst_10mhz_int | ~clk_250mhz_int_dcm_locked | clk_250mhz_int_dcm_clkfx_stopped),
     .rst_out(rst_250mhz_int)
 );
 
 reset_stretch #(.N(3)) rst_250mhz_int_dcm_inst (
     .clk(clk_10mhz_int_bufg),
-    .rst_in(rst_10mhz_int | (~clk_250mhz_int_dcm_locked & clk_250mhz_int_dcm_clkin_stopped) | clk_250mhz_int_dcm_clkfx_stopped),
+    .rst_in(rst_10mhz_int | (~clk_250mhz_int_dcm_locked & clk_250mhz_int_dcm_clkfx_stopped) | clk_250mhz_int_dcm_clkfx_stopped),
     .rst_out(clk_250mhz_int_dcm_reset)
 );
 
 // 250mhz_ext clock domain reset
 reset_stretch #(.N(4)) rst_250mhz_ext_inst (
     .clk(clk_250mhz_ext),
-    .rst_in(rst_10mhz_ext | ~clk_250mhz_ext_dcm_locked | clk_250mhz_ext_dcm_clkin_stopped),
+    .rst_in(rst_10mhz_ext | ~clk_250mhz_ext_dcm_locked | clk_250mhz_ext_dcm_clkfx_stopped),
     .rst_out(rst_250mhz_ext)
 );
 
 reset_stretch #(.N(3)) rst_250mhz_ext_dcm_inst (
     .clk(clk_10mhz_ext_bufg),
-    .rst_in(rst_10mhz_ext | (~clk_250mhz_ext_dcm_locked & clk_250mhz_ext_dcm_clkin_stopped) | clk_250mhz_ext_dcm_clkfx_stopped),
+    .rst_in(rst_10mhz_ext | (~clk_250mhz_ext_dcm_locked & clk_250mhz_ext_dcm_clkfx_stopped) | clk_250mhz_ext_dcm_clkfx_stopped),
     .rst_out(clk_250mhz_ext_dcm_reset)
 );
 
@@ -202,7 +200,7 @@ reg ref_clk_reg = 0;
 reg ref_clk_last_reg = 0;
 reg [7:0] ref_freq_gate_reg = 0;
 reg [7:0] ref_freq_count_reg = 0;
-reg [2:0] ref_freq_valid_count_reg = 0;
+reg [6:0] ref_freq_valid_count_reg = 0;
 reg ref_freq_valid_reg = 0;
 
 assign ref_freq_valid = ref_freq_valid_reg;
@@ -305,76 +303,56 @@ clk_10mhz_ext_bufg_inst
 );
 
 // DCMs to convert input clocks to 250 MHz
-DCM_SP #
+DCM_CLKGEN #
 (
-    .CLKDV_DIVIDE          (2.000),
+    .CLKFXDV_DIVIDE        (2),
     .CLKFX_DIVIDE          (1),
     .CLKFX_MULTIPLY        (25),
-    .CLKIN_DIVIDE_BY_2     ("FALSE"),
+    .SPREAD_SPECTRUM       ("NONE"),
+    .STARTUP_WAIT          ("FALSE"),
     .CLKIN_PERIOD          (100.0),
-    .CLKOUT_PHASE_SHIFT    ("NONE"),
-    .CLK_FEEDBACK          ("NONE"),
-    .DESKEW_ADJUST         ("SYSTEM_SYNCHRONOUS"),
-    .PHASE_SHIFT           (0),
-    .STARTUP_WAIT          ("FALSE")
+    .CLKFX_MD_MAX          (0.000)
 )
-clk_10mhz_int_dcm_sp_inst
+clk_10mhz_int_dcm_clkgen_inst
 (
     .CLKIN                 (clk_10mhz_int_ibufg),
-    .CLKFB                 (1'b0),
-    .CLK0                  (),
-    .CLK90                 (),
-    .CLK180                (),
-    .CLK270                (),
-    .CLK2X                 (),
-    .CLK2X180              (),
     .CLKFX                 (clk_250mhz_int_dcm),
     .CLKFX180              (),
-    .CLKDV                 (),
-    .PSCLK                 (1'b0),
-    .PSEN                  (1'b0),
-    .PSINCDEC              (1'b0),
-    .PSDONE                (),
+    .CLKFXDV               (),
+    .PROGCLK               (1'b0),
+    .PROGDATA              (1'b0),
+    .PROGEN                (1'b0),
+    .PROGDONE              (),
+    .FREEZEDCM             (1'b0),
     .LOCKED                (clk_250mhz_int_dcm_locked),
     .STATUS                (clk_250mhz_int_dcm_status),
-    .RST                   (clk_250mhz_int_dcm_reset),
-    .DSSEN                 (1'b0)
+    .RST                   (clk_250mhz_int_dcm_reset)
 );
 
-DCM_SP #
+DCM_CLKGEN #
 (
-    .CLKDV_DIVIDE          (2.000),
+    .CLKFXDV_DIVIDE        (2),
     .CLKFX_DIVIDE          (1),
     .CLKFX_MULTIPLY        (25),
-    .CLKIN_DIVIDE_BY_2     ("FALSE"),
+    .SPREAD_SPECTRUM       ("NONE"),
+    .STARTUP_WAIT          ("FALSE"),
     .CLKIN_PERIOD          (100.0),
-    .CLKOUT_PHASE_SHIFT    ("NONE"),
-    .CLK_FEEDBACK          ("NONE"),
-    .DESKEW_ADJUST         ("SYSTEM_SYNCHRONOUS"),
-    .PHASE_SHIFT           (0),
-    .STARTUP_WAIT          ("FALSE")
+    .CLKFX_MD_MAX          (0.000)
 )
-clk_10mhz_ext_dcm_sp_inst
+clk_10mhz_ext_dcm_clkgen_inst
 (
     .CLKIN                 (clk_10mhz_ext_ibufg),
-    .CLKFB                 (1'b0),
-    .CLK0                  (),
-    .CLK90                 (),
-    .CLK180                (),
-    .CLK270                (),
-    .CLK2X                 (),
-    .CLK2X180              (),
     .CLKFX                 (clk_250mhz_ext_dcm),
     .CLKFX180              (),
-    .CLKDV                 (),
-    .PSCLK                 (1'b0),
-    .PSEN                  (1'b0),
-    .PSINCDEC              (1'b0),
-    .PSDONE                (),
+    .CLKFXDV               (),
+    .PROGCLK               (1'b0),
+    .PROGDATA              (1'b0),
+    .PROGEN                (1'b0),
+    .PROGDONE              (),
+    .FREEZEDCM             (1'b0),
     .LOCKED                (clk_250mhz_ext_dcm_locked),
     .STATUS                (clk_250mhz_ext_dcm_status),
-    .RST                   (clk_250mhz_ext_dcm_reset),
-    .DSSEN                 (1'b0)
+    .RST                   (clk_250mhz_ext_dcm_reset)
 );
 
 // Buffers for 250 MHz internal clock
