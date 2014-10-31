@@ -44,7 +44,7 @@ module clock
     output wire clk_250mhz_int,
     output wire rst_250mhz_int,
 
-    // 250 MHz and 10 MHz clock and reset from best oscillator
+    // 250 MHz clock and reset from best oscillator
     output wire clk_250mhz,
     output wire rst_250mhz,
 
@@ -168,7 +168,6 @@ reset_stretch #(.N(4)) rst_250mhz_inst (
 // Source switching logic
 reg ref_clk_src_reg = 0;
 reg [2:0] ref_clk_sync_reg = 0;
-reg [2:0] rst_250mhz_ext_sync_reg = 0;
 reg ref_clk_reg = 0;
 reg ref_clk_last_reg = 0;
 reg [7:0] ref_freq_gate_reg = 0;
@@ -188,7 +187,6 @@ end
 
 always @(posedge clk_250mhz_int) begin
     ref_clk_sync_reg <= {ref_clk_sync_reg[1:0], ref_clk_src_reg};
-    rst_250mhz_ext_sync_reg <= {rst_250mhz_ext_sync_reg[1:0], rst_250mhz_ext};
 end
 
 always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
@@ -219,28 +217,34 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
 
             // 10 MHz should be 10.24 cycles, allow one cycle window
             // 4 us (250 MHz) * 256 (gate) / 100 us (10 MHz) = 10.24 cycles
-            if (ref_freq_count_reg >= 8 & ref_freq_count_reg <= 12) begin
+            // add some hysteresis
+            if (ref_freq_count_reg >= 9 & ref_freq_count_reg <= 12) begin
                 if (&ref_freq_valid_count_reg) begin
                     ref_freq_valid_reg <= 1;
                 end else begin
                     ref_freq_valid_count_reg <= ref_freq_valid_count_reg + 1;
                 end
-            end else begin
-                ref_freq_valid_count_reg <= 0;
-                ref_freq_valid_reg <= 0;
+            end else if (ref_freq_count_reg < 9 | ref_freq_count_reg > 12) begin
+                if (ref_freq_valid_reg > 0) begin
+                    ref_freq_valid_count_reg <= ref_freq_valid_count_reg - 1;
+                end else begin
+                    ref_freq_valid_reg <= 0;
+                end
             end
         end
 
         reset_output <= 0;
 
-        if (ref_freq_valid_reg) begin
-            if (~rst_250mhz_ext_sync_reg[2]) begin
+        if (rst_250mhz_ext) begin
+            // external clock DCM is not ready, do not use it
+            clk_out_select_reg <= 0;
+            reset_output <= clk_out_select_reg;
+        end else begin
+            // external clock DCM is ready and valid, switch to it
+            if (ref_freq_valid_reg) begin
                 clk_out_select_reg <= 1;
                 reset_output <= ~clk_out_select_reg;
             end
-        end else begin
-            clk_out_select_reg <= 0;
-            reset_output <= clk_out_select_reg;
         end
     end
 end
