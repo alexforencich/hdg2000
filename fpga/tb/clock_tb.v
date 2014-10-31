@@ -40,8 +40,6 @@ wire clk_250mhz_int;
 wire rst_250mhz_int;
 wire clk_250mhz;
 wire rst_250mhz;
-wire clk_10mhz;
-wire rst_10mhz;
 
 wire ext_clock_selected;
 
@@ -75,7 +73,7 @@ initial begin : stimulus
     clk_10mhz_ext_enable <= 1;
 
     // wait for external clock to lock and clock switchover
-    #50000;
+    #500000;
 
     // disable external clock
     clk_10mhz_ext_enable <= 0;
@@ -98,8 +96,6 @@ UUT (
 
     .clk_250mhz(clk_250mhz),
     .rst_250mhz(rst_250mhz),
-    .clk_10mhz(clk_10mhz),
-    .rst_10mhz(rst_10mhz),
 
     .ext_clock_selected(ext_clock_selected)
 );
