@@ -142,17 +142,27 @@ clock_inst
 	.ext_clock_selected(ext_clock_selected)
 );
 
+
 // generate 10 MHz ref out
-// interpolate falling edge with ODDR2
-// use an SRL32E
-reg [24:0] count_reg = {{12{1'b1}}, {13{1'b0}}};
+// 25 cycle counter, falling edge interpolated
+reg [4:0] count_reg = 0;
 reg q0 = 0;
 reg q1 = 0;
 
-always @(posedge clk_250mhz) begin
-	count_reg <= {count_reg[23:0], count_reg[24]};
-	q0 <= count_reg[0];
-	q1 <= count_reg[0] | count_reg[1];
+always @(posedge clk_250mhz or posedge rst_250mhz) begin
+    if (rst_250mhz) begin
+        count_reg <= 0;
+        q0 <= 0;
+        q1 <= 0;
+    end else begin
+        if (count_reg < 24) begin
+            count_reg <= count_reg + 1;
+        end else begin
+            count_reg <= 0;
+        end
+        q0 <= count_reg < 12;
+        q1 <= count_reg < 13;
+    end
 end
 
 ODDR2
