@@ -92,9 +92,6 @@ wire clk_250mhz_int_dcm;
 wire clk_250mhz_ext_dcm;
 wire clk_250mhz_ext;
 
-wire clk_250mhz_out;
-wire clk_10mhz_out;
-
 // resets
 wire rst_10mhz_int;
 wire rst_10mhz_ext;
@@ -110,12 +107,6 @@ wire clk_250mhz_ext_dcm_reset;
 wire clk_250mhz_ext_dcm_locked;
 wire [7:0] clk_250mhz_ext_dcm_status;
 wire clk_250mhz_ext_dcm_clkfx_stopped = clk_250mhz_ext_dcm_status[1];
-
-wire clk_250mhz_out_dcm_reset;
-wire clk_250mhz_out_dcm_locked;
-wire [7:0] clk_250mhz_out_dcm_status;
-wire clk_250mhz_out_dcm_clkin_stopped = clk_250mhz_out_dcm_status[1];
-wire clk_250mhz_out_dcm_clkfx_stopped = clk_250mhz_out_dcm_status[2];
 
 wire ref_freq_valid;
 
