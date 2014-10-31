@@ -118,9 +118,12 @@ module fpga
 );
 
 wire clk_250mhz_int;
+wire rst_250mhz_int;
 
 wire clk_250mhz;
-wire clk_10mhz;
+wire rst_250mhz;
+
+wire ext_clock_selected;
 
 clock
 clock_inst
@@ -131,20 +134,36 @@ clock_inst
 	.clk_10mhz_ext(clk_10mhz_ext),
 
 	.clk_250mhz_int(clk_250mhz_int),
+	.rst_250mhz_int(rst_250mhz_int),
 
 	.clk_250mhz(clk_250mhz),
-	.clk_10mhz(clk_10mhz)
+	.rst_250mhz(rst_250mhz),
+
+	.ext_clock_selected(ext_clock_selected)
 );
+
+// generate 10 MHz ref out
+// interpolate falling edge with ODDR2
+// use an SRL32E
+reg [24:0] count_reg = {{12{1'b1}}, {13{1'b0}}};
+reg q0 = 0;
+reg q1 = 0;
+
+always @(posedge clk_250mhz) begin
+	count_reg <= {count_reg[23:0], count_reg[24]};
+	q0 <= count_reg[0];
+	q1 <= count_reg[0] | count_reg[1];
+end
 
 ODDR2
 clk_10mhz_out_oddr2_inst
 (
 	.Q(clk_10mhz_out),
-	.C0(clk_10mhz),
-	.C1(~clk_10mhz),
+	.C0(clk_250mhz),
+	.C1(~clk_250mhz),
 	.CE(1),
-	.D0(1),
-	.D1(0),
+	.D0(q0),
+	.D1(q1),
 	.R(0),
 	.S(0)
 );
