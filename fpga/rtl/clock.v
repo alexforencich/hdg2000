@@ -225,7 +225,7 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
                     ref_freq_valid_count_reg <= ref_freq_valid_count_reg + 1;
                 end
             end else if (ref_freq_count_reg < 9 | ref_freq_count_reg > 12) begin
-                if (ref_freq_valid_reg > 0) begin
+                if (ref_freq_valid_count_reg > 0) begin
                     ref_freq_valid_count_reg <= ref_freq_valid_count_reg - 1;
                 end else begin
                     ref_freq_valid_reg <= 0;
