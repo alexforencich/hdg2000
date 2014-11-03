@@ -1,4 +1,4 @@
-# User Constraints File for FPGA in Hantek HDG2000
+# User Constraints File for FPGA in Hantek HDG2000 board rev 1004
 
 CONFIG PART = xc6slx16csg324-2;
 
