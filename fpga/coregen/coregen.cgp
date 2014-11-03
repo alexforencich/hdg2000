@@ -1,4 +1,4 @@
-# Date: Sun Oct 26 20:32:32 2014
+# Date: Fri Oct 31 09:45:18 2014
 
 SET addpads = false
 SET asysymbol = true
@@ -14,9 +14,9 @@ SET implementationfiletype = Ngc
 SET package = csg324
 SET removerpms = false
 SET simulationfiles = Behavioral
-SET speedgrade = -3
+SET speedgrade = -2
 SET verilogsim = true
 SET vhdlsim = false
 SET workingdirectory = ./tmp/
 
-# CRC: 210bd986
+# CRC: 786de1ed
