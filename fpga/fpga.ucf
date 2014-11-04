@@ -1,6 +1,6 @@
 # User Constraints File for FPGA in Hantek HDG2000 board rev 1004
 
-CONFIG PART = xc6slx16csg324-2;
+CONFIG PART = xc6slx16-2csg324;
 
 # clocks
 # 10MHz clock from X2
@@ -161,8 +161,8 @@ NET "dac_reset"     LOC = "B16" | IOSTANDARD=LVCMOS33 | SLEW=FAST | DRIVE=8; # B
 # NET "ram1_udqs_n"   LOC = "P1"  | IOSTANDARD=DIFF_SSTL18_II | SLEW=FAST | DRIVE=8; # Bank = 3, IO_L34N_M3UDQSN_3,             U8.A8
 # NET "ram1_udm"      LOC = "K4"  | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 3, IO_L42P_GCLK25_TRDY2_M3UDM_3,  U8.B3
 # NET "ram1_odt"      LOC = "K6"  | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 3, IO_L45N_M3ODT_3,               U8.K9
-# NET "ram1_rzq"      LOC = "N4"  | IOSTANDARD=SSTL18_II;                            # Bank = 3, IO_L1P_3
-# NET "ram1_zio"      LOC = "P4"  | IOSTANDARD=SSTL18_II;                            # Bank = 3, IO_L2P_3
+# NET "ram1_rzq"      LOC = "C2"  | IOSTANDARD=SSTL18_II;                            # Bank = 3, IO_L1P_3
+# NET "ram1_zio"      LOC = "L6"  | IOSTANDARD=SSTL18_II;                            # Bank = 3, IO_L2P_3
 # 
 # # U12 DDR2 SDRAM
 # NET "ram2_cke"      LOC = "D17" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L31P_A19_M1CKE_1,           U12.K2
@@ -185,8 +185,8 @@ NET "dac_reset"     LOC = "B16" | IOSTANDARD=LVCMOS33 | SLEW=FAST | DRIVE=8; # B
 # NET "ram2_a<11>"    LOC = "G14" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L30N_A20_M1A11_1,           U12.P7
 # NET "ram2_a<12>"    LOC = "D18" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L31N_A18_M1A12_1,           U12.R2
 # NET "ram2_ba<0>"    LOC = "H13" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L36P_A9_M1BA0_1,            U12.L2
-# NET "ram2_ba<1>"    LOC = "K13" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L34N_A12_M1BA2_1,           U12.L3
-# NET "ram2_ba<2>"    LOC = "K16" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L41N_GCLK8_M1CASN_1,        U12.L1
+# NET "ram2_ba<1>"    LOC = "H14" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L34N_A12_M1BA2_1,           U12.L3
+# NET "ram2_ba<2>"    LOC = "K13" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L41N_GCLK8_M1CASN_1,        U12.L1
 # NET "ram2_dq<0>"    LOC = "M16" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L47P_FWE_B_M1DQ0_1,         U12.G8
 # NET "ram2_dq<1>"    LOC = "M18" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L47N_LDC_M1DQ1_1,           U12.G2
 # NET "ram2_dq<2>"    LOC = "L17" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L46P_FCS_B_M1DQ2_1,         U12.H7
@@ -210,7 +210,7 @@ NET "dac_reset"     LOC = "B16" | IOSTANDARD=LVCMOS33 | SLEW=FAST | DRIVE=8; # B
 # NET "ram2_udqs_n"   LOC = "N16" | IOSTANDARD=DIFF_SSTL18_II | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L50N_M1UDQSN_1,             U12.A8
 # NET "ram2_udm"      LOC = "L15" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L42P_GCLK7_M1UDM_1,         U12.B3
 # NET "ram2_odt"      LOC = "K14" | IOSTANDARD=SSTL18_II      | SLEW=FAST | DRIVE=8; # Bank = 1, IO_L39N_M1ODT_1,               U12.K9
-# NET "ram2_rzq"      LOC = "F15" | IOSTANDARD=SSTL18_II;                            # Bank = 1, IO_L1P_A25_1
+# NET "ram2_rzq"      LOC = "C18" | IOSTANDARD=SSTL18_II;                            # Bank = 1, IO_L1P_A25_1
 # NET "ram2_zio"      LOC = "M14" | IOSTANDARD=SSTL18_II;                            # Bank = 1, IO_L53P_1
 
 
