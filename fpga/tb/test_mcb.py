@@ -131,6 +131,8 @@ def bench():
         for i in range(0, len(data), 16):
             print(" ".join("{:02x}".format(ord(c)) for c in data[i:i+16]))
 
+        assert mcb_inst.read_mem(0,4) == b'test'
+
         yield clk.posedge
         print("test 2: write via port0")
         current_test.next = 2
@@ -155,6 +157,33 @@ def bench():
         data = mcb_inst.read_mem(0, 32)
         for i in range(0, len(data), 16):
             print(" ".join("{:02x}".format(ord(c)) for c in data[i:i+16]))
+
+        assert mcb_inst.read_mem(4,4) == b'\x11\x22\x33\x44'
+
+        yield clk.posedge
+        print("test 2: read via port0")
+        current_test.next = 2
+
+        yield clk.posedge
+        port0_cmd_instr.next = 1
+        port0_cmd_bl.next = 0
+        port0_cmd_byte_addr.next = 4
+        port0_cmd_en.next = 1
+        
+        yield clk.posedge
+        port0_cmd_en.next = 0
+
+        while port0_rd_empty:
+            yield clk.posedge
+
+        assert port0_rd_data == 0x44332211
+
+        port0_rd_en.next = 1
+        yield clk.posedge
+        port0_rd_en.next = 0
+        yield clk.posedge
+
+        yield delay(100)
 
         raise StopSimulation
 
