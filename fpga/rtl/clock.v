@@ -170,7 +170,8 @@ reg ref_clk_src_reg = 0;
 reg [2:0] ref_clk_sync_reg = 0;
 reg ref_clk_reg = 0;
 reg ref_clk_last_reg = 0;
-reg [7:0] ref_freq_gate_reg = 0;
+reg [7:0] ref_freq_gate_count_reg = 0;
+reg ref_freq_gate_reg = 0;
 reg [7:0] ref_freq_count_reg = 0;
 reg [6:0] ref_freq_valid_count_reg = 0;
 reg ref_freq_valid_reg = 0;
@@ -195,6 +196,7 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
         ref_clk_reg <= 0;
         ref_clk_last_reg <= 0;
         ref_freq_gate_reg <= 0;
+        ref_freq_gate_count_reg <= 0;
         ref_freq_count_reg <= 0;
         ref_freq_valid_count_reg <= 0;
         ref_freq_valid_reg <= 0;
@@ -203,7 +205,8 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
         ref_clk_reg <= ref_clk_sync_reg[2];
         ref_clk_last_reg <= ref_clk_reg;
 
-        ref_freq_gate_reg <= ref_freq_gate_reg + 1;
+        ref_freq_gate_count_reg <= ref_freq_gate_count_reg + 1;
+        ref_freq_gate_reg <= (ref_freq_gate_count_reg == 0);
 
         // measure edge rate of reference signal
         // count edges
@@ -212,7 +215,7 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
         end
 
         // gate every 256 cycles and check edge count
-        if (ref_freq_gate_reg == 0) begin
+        if (ref_freq_gate_reg) begin
             ref_freq_count_reg <= 0;
 
             // 10 MHz should be 10.24 cycles, allow one cycle window
