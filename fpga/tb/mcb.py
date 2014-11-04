@@ -98,7 +98,7 @@ class MCB(object):
                         elif instr == 1 or instr == 3:
                             # read or read with auto precharge
                             self.mem.seek(ba % self.size)
-                            data = self.mem.read(int(bl*pw/8) % self.size)
+                            data = self.mem.read(int((bl+1)*pw/8))
                             for k in range(bl+1):
                                 if pw == 32:
                                     rdf.put(struct.unpack('<L', data[k*4:(k+1)*4])[0])
@@ -109,8 +109,6 @@ class MCB(object):
                         else:
                             # refresh
                             pass
-
-                pass
 
         return logic
 
@@ -180,11 +178,15 @@ class MCB(object):
             while True:
                 yield rd_clk.posedge
 
+                if rd_en:
+                    valid = False
+
                 if not fifo.empty() and (rd_en or not valid):
+                    valid = True
                     rd_data.next = fifo.get()
 
                 rd_full.next = fifo.full()
-                rd_empty.next = fifo.empty()
+                rd_empty.next = not valid
                 rd_count.next = fifo.qsize()
 
         return logic
