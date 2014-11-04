@@ -95,6 +95,8 @@ class MCB(object):
                                         self.mem.write(data[l])
                                     else:
                                         self.mem.seek(1, 1)
+                                if pn is not None:
+                                    print("[%s] Write word %d/%d a:0x%08x m:0x%02x d:%s" % (pn, k+1, bl+1, ba+k*pw/8, mask, " ".join("{:02x}".format(ord(c)) for c in data)))
                         elif instr == 1 or instr == 3:
                             # read or read with auto precharge
                             self.mem.seek(ba % self.size)
@@ -106,6 +108,8 @@ class MCB(object):
                                     rdf.put(struct.unpack('<Q', data[k*8:(k+1)*8])[0])
                                 elif pw == 128:
                                     rdf.put(struct.unpack('<Q', data[k*16:k*16+8])[0] + struct.unpack('<Q', data[k*16+8:(k+1)*16])[0] * 2**64)
+                                if pn is not None:
+                                    print("[%s] Read word %d/%d a:0x%08x d:%s" % (pn, k+1, bl+1, ba+k*pw/8, " ".join("{:02x}".format(ord(c)) for c in data[k*int(pw/8):(k+1)*int(pw/8)])))
                         else:
                             # refresh
                             pass
