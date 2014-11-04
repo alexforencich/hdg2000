@@ -15,9 +15,10 @@ NET "clk_10mhz_ext" TNM_NET = "clk_10mhz_ext";
 TIMESPEC "TS_clk_10mhz_ext" = PERIOD "clk_10mhz_ext" 100 ns HIGH 50%;
 
 # SoC Interface
-NET "cntrl_sck"     LOC = "P12" | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L13N_D10_2,             U3.?
-NET "cntrl_mosi"    LOC = "N9"  | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L22N_2,                 U3.?
-NET "cntrl_miso"    LOC = "M10" | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L22P_2,                 U3.?
+NET "cntrl_cs"      LOC = "P8"  | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L44N_2,                 U3.V11?
+NET "cntrl_sck"     LOC = "P12" | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L13N_D10_2,             U3.V10?
+NET "cntrl_mosi"    LOC = "N9"  | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L22N_2,                 U3.R10?
+NET "cntrl_miso"    LOC = "M10" | IOSTANDARD=LVCMOS33 | SLEW=SLOW | DRIVE=8; # Bank = 2, IO_L22P_2,                 U3.W10?
 
 # Trigger
 NET "ext_trig"      LOC = "V12" | IOSTANDARD=LVCMOS33; # Bank = 2, IO_L19N_2, J10

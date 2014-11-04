@@ -37,6 +37,7 @@ module fpga
 	output wire  clk_10mhz_out,
 
 	// SoC interface
+	input  wire  cntrl_cs,
 	input  wire  cntrl_sck,
 	input  wire  cntrl_mosi,
 	output wire  cntrl_miso,
