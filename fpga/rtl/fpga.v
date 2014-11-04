@@ -278,15 +278,15 @@ ddr2_clock_inst
 ddr2
 ddr2_ram1_inst
 (
-	.async_rst(rst_250mhz_int | ~mcb_clk_locked),
-	.mcb_clk_0(mcb_clk_0),
-	.mcb_clk_180(mcb_clk_180),
-	.mcb_drp_clk(mcb_drp_clk),
-	.mcb_clk_locked(mcb_clk_locked),
+    .async_rst(rst_250mhz_int | ~mcb_clk_locked),
+    .mcb_clk_0(mcb_clk_0),
+    .mcb_clk_180(mcb_clk_180),
+    .mcb_drp_clk(mcb_drp_clk),
+    .mcb_clk_locked(mcb_clk_locked),
 
-	.calib_done(),
+    .calib_done(),
 
-	.mcbx_dram_a(ram1_a),
+    .mcbx_dram_a(ram1_a),
     .mcbx_dram_ba(ram1_ba),
     .mcbx_dram_ras_n(ram1_ras_n),
     .mcbx_dram_cas_n(ram1_cas_n),
@@ -423,15 +423,15 @@ ddr2_ram1_inst
 ddr2
 ddr2_ram2_inst
 (
-	.async_rst(rst_250mhz_int | ~mcb_clk_locked),
-	.mcb_clk_0(mcb_clk_0),
-	.mcb_clk_180(mcb_clk_180),
-	.mcb_drp_clk(mcb_drp_clk),
-	.mcb_clk_locked(mcb_clk_locked),
+    .async_rst(rst_250mhz_int | ~mcb_clk_locked),
+    .mcb_clk_0(mcb_clk_0),
+    .mcb_clk_180(mcb_clk_180),
+    .mcb_drp_clk(mcb_drp_clk),
+    .mcb_clk_locked(mcb_clk_locked),
 
-	.calib_done(),
+    .calib_done(),
 
-	.mcbx_dram_a(ram2_a),
+    .mcbx_dram_a(ram2_a),
     .mcbx_dram_ba(ram2_ba),
     .mcbx_dram_ras_n(ram2_ras_n),
     .mcbx_dram_cas_n(ram2_cas_n),
