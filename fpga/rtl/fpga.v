@@ -216,8 +216,27 @@ dac_clk_obufds_inst
 	.OB(dac_clk_n)
 );
 
-assign dac_p1_d = count;
-assign dac_p2_d = count;
+reg [15:0] dac_p1_d_reg = 0;
+reg [15:0] dac_p2_d_reg = 0;
+
+always @(posedge clk_250mhz) begin
+	dac_p1_d_reg <= count;
+	dac_p2_d_reg <= -count;
+end
+
+(* IOB = "TRUE" *)
+reg [15:0] dac_p1_d_oreg;
+(* IOB = "TRUE" *)
+reg [15:0] dac_p2_d_oreg;
+
+always @(posedge clk_250mhz) begin
+	dac_p1_d_oreg <= dac_p1_d_reg;
+	dac_p2_d_oreg <= dac_p2_d_reg;
+end
+
+assign dac_p1_d = dac_p1_d_oreg;
+assign dac_p2_d = dac_p2_d_oreg;
+
 assign dac_sdio = 0;
 assign dac_sclk = 0;
 assign dac_csb = 0;
