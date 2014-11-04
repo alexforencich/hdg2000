@@ -27,7 +27,7 @@ THE SOFTWARE.
 `timescale 1ns / 1ps
 
 /*
- * Clock management
+ * Reset stretcher
  */
 module reset_stretch #(
     parameter N = 4
