@@ -236,6 +236,8 @@ always @(posedge clk or posedge rst) begin
         output_axis_tlast_reg <= output_axis_tlast_next;
 
         miso_reg <= miso_next;
+        
+        busy_reg <= state_next != STATE_IDLE;
     end
 end
 
