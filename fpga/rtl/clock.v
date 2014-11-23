@@ -365,8 +365,8 @@ BUFGMUX #
 )
 clk_250mhz_bufgmux_inst
 (
-    .I0(clk_250mhz_int_dcm),
-    .I1(clk_250mhz_ext_dcm),
+    .I0(clk_250mhz_int),
+    .I1(clk_250mhz_ext),
     .S(clk_out_select),
     .O(clk_250mhz)
 );
