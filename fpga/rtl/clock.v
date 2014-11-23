@@ -175,6 +175,8 @@ reg ref_freq_gate_reg = 0;
 reg [7:0] ref_freq_count_reg = 0;
 reg [6:0] ref_freq_valid_count_reg = 0;
 reg ref_freq_valid_reg = 0;
+reg ref_freq_window1_reg = 0;
+reg ref_freq_window2_reg = 0;
 
 assign ref_freq_valid = ref_freq_valid_reg;
 
@@ -200,6 +202,8 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
         ref_freq_count_reg <= 0;
         ref_freq_valid_count_reg <= 0;
         ref_freq_valid_reg <= 0;
+        ref_freq_window1_reg <= 0;
+        ref_freq_window2_reg <= 0;
         reset_output <= 0;
     end else begin
         ref_clk_reg <= ref_clk_sync_reg[2];
@@ -214,20 +218,23 @@ always @(posedge clk_250mhz_int or posedge rst_250mhz_int) begin
             ref_freq_count_reg <= ref_freq_count_reg + 1;
         end
 
+        // 10 MHz should be 10.24 cycles, allow one cycle window
+        // 4 us (250 MHz) * 256 (gate) / 100 us (10 MHz) = 10.24 cycles
+        // add some hysteresis
+        ref_freq_window1_reg <= (ref_freq_count_reg >= 10 & ref_freq_count_reg <= 11);
+        ref_freq_window2_reg <= (ref_freq_count_reg >= 9 & ref_freq_count_reg <= 12);
+
         // gate every 256 cycles and check edge count
         if (ref_freq_gate_reg) begin
             ref_freq_count_reg <= 0;
 
-            // 10 MHz should be 10.24 cycles, allow one cycle window
-            // 4 us (250 MHz) * 256 (gate) / 100 us (10 MHz) = 10.24 cycles
-            // add some hysteresis
-            if (ref_freq_count_reg >= 10 & ref_freq_count_reg <= 11) begin
+            if (ref_freq_window1_reg) begin
                 if (&ref_freq_valid_count_reg) begin
                     ref_freq_valid_reg <= 1;
                 end else begin
                     ref_freq_valid_count_reg <= ref_freq_valid_count_reg + 1;
                 end
-            end else if (ref_freq_count_reg < 9 | ref_freq_count_reg > 12) begin
+            end else if (!ref_freq_window2_reg) begin
                 if (ref_freq_valid_count_reg > 0) begin
                     ref_freq_valid_count_reg <= ref_freq_valid_count_reg - 1;
                 end else begin
