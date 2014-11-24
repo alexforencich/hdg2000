@@ -191,7 +191,7 @@ class MCB(object):
 
                 rd_full.next = fifo.full()
                 rd_empty.next = not valid
-                rd_count.next = fifo.qsize()
+                rd_count.next = fifo.qsize() + int(valid)
 
         return logic
 
