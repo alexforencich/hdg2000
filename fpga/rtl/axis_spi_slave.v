@@ -104,7 +104,7 @@ wire sck_posedge = sck & !sck_last;
 wire sck_negedge = !sck & sck_last;
 
 always @* begin
-    state_next = 2'bz;
+    state_next = 0;
 
     tx_data_next = tx_data_reg;
     rx_data_next = rx_data_reg;
