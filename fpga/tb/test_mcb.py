@@ -36,13 +36,6 @@ def bench():
     rst = Signal(bool(0))
     current_test = Signal(intbv(0)[8:])
 
-    input_axis_tdata = Signal(intbv(0)[8:])
-    input_axis_tkeep = Signal(intbv(0)[1:])
-    input_axis_tvalid = Signal(bool(0))
-    input_axis_tlast = Signal(bool(0))
-    input_axis_tuser = Signal(bool(0))
-    output_axis_tready = Signal(bool(0))
-
     port0_cmd_en = Signal(bool(0))
     port0_cmd_instr = Signal(intbv(0)[3:])
     port0_cmd_bl = Signal(intbv(0)[6:])
