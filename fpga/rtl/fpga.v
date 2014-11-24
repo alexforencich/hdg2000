@@ -188,8 +188,6 @@ clk_10mhz_out_oddr2_inst
 
 reg [15:0] count = 0;
 
-assign cntrl_miso = 0;
-
 assign ferc_dat = 0;
 assign ferc_lat = 0;
 assign ferc_clk = 0;
@@ -258,10 +256,66 @@ always @(posedge clk_250mhz) begin
 	count <= count + 1;
 end
 
+/////////////////////////////////////////////////
+//                                             //
+// DDR2 Interface                              //
+//                                             //
+/////////////////////////////////////////////////
+
 wire mcb_clk_0;
 wire mcb_clk_180;
 wire mcb_drp_clk;
 wire mcb_clk_locked;
+
+wire ram1_p0_cmd_clk;
+wire ram1_p0_cmd_en;
+wire [2:0] ram1_p0_cmd_instr;
+wire [5:0] ram1_p0_cmd_bl;
+wire [31:0] ram1_p0_cmd_byte_addr;
+wire ram1_p0_cmd_empty;
+wire ram1_p0_cmd_full;
+wire ram1_p0_wr_clk;
+wire ram1_p0_wr_en;
+wire [3:0] ram1_p0_wr_mask;
+wire [31:0] ram1_p0_wr_data;
+wire ram1_p0_wr_empty;
+wire ram1_p0_wr_full;
+wire ram1_p0_wr_underrun;
+wire [6:0] ram1_p0_wr_count;
+wire ram1_p0_wr_error;
+wire ram1_p0_rd_clk;
+wire ram1_p0_rd_en;
+wire [31:0] ram1_p0_rd_data;
+wire ram1_p0_rd_empty;
+wire ram1_p0_rd_full;
+wire ram1_p0_rd_overflow;
+wire [6:0] ram1_p0_rd_count;
+wire ram1_p0_rd_error;
+
+wire ram2_p0_cmd_clk;
+wire ram2_p0_cmd_en;
+wire [2:0] ram2_p0_cmd_instr;
+wire [5:0] ram2_p0_cmd_bl;
+wire [31:0] ram2_p0_cmd_byte_addr;
+wire ram2_p0_cmd_empty;
+wire ram2_p0_cmd_full;
+wire ram2_p0_wr_clk;
+wire ram2_p0_wr_en;
+wire [3:0] ram2_p0_wr_mask;
+wire [31:0] ram2_p0_wr_data;
+wire ram2_p0_wr_empty;
+wire ram2_p0_wr_full;
+wire ram2_p0_wr_underrun;
+wire [6:0] ram2_p0_wr_count;
+wire ram2_p0_wr_error;
+wire ram2_p0_rd_clk;
+wire ram2_p0_rd_en;
+wire [31:0] ram2_p0_rd_data;
+wire ram2_p0_rd_empty;
+wire ram2_p0_rd_full;
+wire ram2_p0_rd_overflow;
+wire [6:0] ram2_p0_rd_count;
+wire ram2_p0_rd_error;
 
 ddr2_clock
 ddr2_clock_inst
@@ -305,30 +359,30 @@ ddr2_ram1_inst
     .mcbx_rzq(ram1_rzq),
     .mcbx_zio(ram1_zio),
 
-    .p0_cmd_clk(0),
-    .p0_cmd_en(0),
-    .p0_cmd_instr(0),
-    .p0_cmd_bl(0),
-    .p0_cmd_byte_addr(0),
-    .p0_cmd_empty(),
-    .p0_cmd_full(),
-    .p0_wr_clk(0),
-    .p0_wr_en(0),
-    .p0_wr_mask(0),
-    .p0_wr_data(0),
-    .p0_wr_empty(),
-    .p0_wr_full(),
-    .p0_wr_underrun(),
-    .p0_wr_count(),
-    .p0_wr_error(),
-    .p0_rd_clk(0),
-    .p0_rd_en(0),
-    .p0_rd_data(),
-    .p0_rd_empty(),
-    .p0_rd_full(),
-    .p0_rd_overflow(),
-    .p0_rd_count(),
-    .p0_rd_error(),
+    .p0_cmd_clk(ram1_p0_cmd_clk),
+    .p0_cmd_en(ram1_p0_cmd_en),
+    .p0_cmd_instr(ram1_p0_cmd_instr),
+    .p0_cmd_bl(ram1_p0_cmd_bl),
+    .p0_cmd_byte_addr(ram1_p0_cmd_byte_addr),
+    .p0_cmd_empty(ram1_p0_cmd_empty),
+    .p0_cmd_full(ram1_p0_cmd_full),
+    .p0_wr_clk(ram1_p0_wr_clk),
+    .p0_wr_en(ram1_p0_wr_en),
+    .p0_wr_mask(ram1_p0_wr_mask),
+    .p0_wr_data(ram1_p0_wr_data),
+    .p0_wr_empty(ram1_p0_wr_empty),
+    .p0_wr_full(ram1_p0_wr_full),
+    .p0_wr_underrun(ram1_p0_wr_underrun),
+    .p0_wr_count(ram1_p0_wr_count),
+    .p0_wr_error(ram1_p0_wr_error),
+    .p0_rd_clk(ram1_p0_rd_clk),
+    .p0_rd_en(ram1_p0_rd_en),
+    .p0_rd_data(ram1_p0_rd_data),
+    .p0_rd_empty(ram1_p0_rd_empty),
+    .p0_rd_full(ram1_p0_rd_full),
+    .p0_rd_overflow(ram1_p0_rd_overflow),
+    .p0_rd_count(ram1_p0_rd_count),
+    .p0_rd_error(ram1_p0_rd_error),
 
     .p1_cmd_clk(0),
     .p1_cmd_en(0),
@@ -450,30 +504,30 @@ ddr2_ram2_inst
     .mcbx_rzq(ram2_rzq),
     .mcbx_zio(ram2_zio),
 
-    .p0_cmd_clk(0),
-    .p0_cmd_en(0),
-    .p0_cmd_instr(0),
-    .p0_cmd_bl(0),
-    .p0_cmd_byte_addr(0),
-    .p0_cmd_empty(),
-    .p0_cmd_full(),
-    .p0_wr_clk(0),
-    .p0_wr_en(0),
-    .p0_wr_mask(0),
-    .p0_wr_data(0),
-    .p0_wr_empty(),
-    .p0_wr_full(),
-    .p0_wr_underrun(),
-    .p0_wr_count(),
-    .p0_wr_error(),
-    .p0_rd_clk(0),
-    .p0_rd_en(0),
-    .p0_rd_data(),
-    .p0_rd_empty(),
-    .p0_rd_full(),
-    .p0_rd_overflow(),
-    .p0_rd_count(),
-    .p0_rd_error(),
+    .p0_cmd_clk(ram2_p0_cmd_clk),
+    .p0_cmd_en(ram2_p0_cmd_en),
+    .p0_cmd_instr(ram2_p0_cmd_instr),
+    .p0_cmd_bl(ram2_p0_cmd_bl),
+    .p0_cmd_byte_addr(ram2_p0_cmd_byte_addr),
+    .p0_cmd_empty(ram2_p0_cmd_empty),
+    .p0_cmd_full(ram2_p0_cmd_full),
+    .p0_wr_clk(ram2_p0_wr_clk),
+    .p0_wr_en(ram2_p0_wr_en),
+    .p0_wr_mask(ram2_p0_wr_mask),
+    .p0_wr_data(ram2_p0_wr_data),
+    .p0_wr_empty(ram2_p0_wr_empty),
+    .p0_wr_full(ram2_p0_wr_full),
+    .p0_wr_underrun(ram2_p0_wr_underrun),
+    .p0_wr_count(ram2_p0_wr_count),
+    .p0_wr_error(ram2_p0_wr_error),
+    .p0_rd_clk(ram2_p0_rd_clk),
+    .p0_rd_en(ram2_p0_rd_en),
+    .p0_rd_data(ram2_p0_rd_data),
+    .p0_rd_empty(ram2_p0_rd_empty),
+    .p0_rd_full(ram2_p0_rd_full),
+    .p0_rd_overflow(ram2_p0_rd_overflow),
+    .p0_rd_count(ram2_p0_rd_count),
+    .p0_rd_error(ram2_p0_rd_error),
 
     .p1_cmd_clk(0),
     .p1_cmd_en(0),
@@ -563,6 +617,115 @@ ddr2_ram2_inst
     .p5_rd_overflow(),
     .p5_rd_count(),
     .p5_rd_error()
+);
+
+/////////////////////////////////////////////////
+//                                             //
+// SoC Interface                               //
+//                                             //
+/////////////////////////////////////////////////
+
+wire [7:0] cntrl_rx_tdata;
+wire cntrl_rx_tvalid;
+wire cntrl_rx_tready;
+wire cntrl_rx_tlast;
+
+wire [7:0] cntrl_tx_tdata;
+wire cntrl_tx_tvalid;
+wire cntrl_tx_tready;
+wire cntrl_tx_tlast;
+
+axis_spi_slave #(
+    .DATA_WIDTH(8)
+)
+spi_slave_inst (
+    .clk(clk_250mhz_int),
+    .rst(rst_250mhz_int),
+    // axi input
+    .input_axis_tdata(cntrl_tx_tdata),
+    .input_axis_tvalid(cntrl_tx_tvalid),
+    .input_axis_tready(cntrl_tx_tready),
+    .input_axis_tlast(cntrl_tx_tlast),
+    // axi output
+    .output_axis_tdata(cntrl_rx_tdata),
+    .output_axis_tvalid(cntrl_rx_tvalid),
+    .output_axis_tready(cntrl_rx_tready),
+    .output_axis_tlast(cntrl_rx_tlast),
+    // spi interface
+    .cs(cntrl_cs),
+    .sck(cntrl_sck),
+    .mosi(cntrl_mosi),
+    .miso(cntrl_miso),
+    // status
+    .busy()
+);
+
+soc_interface
+soc_interface_inst (
+    .clk(clk_250mhz_int),
+    .rst(rst_250mhz_int),
+    // axi input
+    .input_axis_tdata(cntrl_rx_tdata),
+    .input_axis_tvalid(cntrl_rx_tvalid),
+    .input_axis_tready(cntrl_rx_tready),
+    .input_axis_tlast(cntrl_rx_tlast),
+    // axi output
+    .output_axis_tdata(cntrl_tx_tdata),
+    .output_axis_tvalid(cntrl_tx_tvalid),
+    .output_axis_tready(cntrl_tx_tready),
+    .output_axis_tlast(cntrl_tx_tlast),
+    // mcb interface port 0
+    .port0_cmd_clk(ram1_p0_cmd_clk),
+    .port0_cmd_en(ram1_p0_cmd_en),
+    .port0_cmd_instr(ram1_p0_cmd_instr),
+    .port0_cmd_bl(ram1_p0_cmd_bl),
+    .port0_cmd_byte_addr(ram1_p0_cmd_byte_addr),
+    .port0_cmd_empty(ram1_p0_cmd_empty),
+    .port0_cmd_full(ram1_p0_cmd_full),
+    .port0_wr_clk(ram1_p0_wr_clk),
+    .port0_wr_en(ram1_p0_wr_en),
+    .port0_wr_mask(ram1_p0_wr_mask),
+    .port0_wr_data(ram1_p0_wr_data),
+    .port0_wr_empty(ram1_p0_wr_empty),
+    .port0_wr_full(ram1_p0_wr_full),
+    .port0_wr_underrun(ram1_p0_wr_underrun),
+    .port0_wr_count(ram1_p0_wr_count),
+    .port0_wr_error(ram1_p0_wr_error),
+    .port0_rd_clk(ram1_p0_rd_clk),
+    .port0_rd_en(ram1_p0_rd_en),
+    .port0_rd_data(ram1_p0_rd_data),
+    .port0_rd_empty(ram1_p0_rd_empty),
+    .port0_rd_full(ram1_p0_rd_full),
+    .port0_rd_overflow(ram1_p0_rd_overflow),
+    .port0_rd_count(ram1_p0_rd_count),
+    .port0_rd_error(ram1_p0_rd_error),
+    // mcb interface port 1
+    .port1_cmd_clk(ram2_p0_cmd_clk),
+    .port1_cmd_en(ram2_p0_cmd_en),
+    .port1_cmd_instr(ram2_p0_cmd_instr),
+    .port1_cmd_bl(ram2_p0_cmd_bl),
+    .port1_cmd_byte_addr(ram2_p0_cmd_byte_addr),
+    .port1_cmd_empty(ram2_p0_cmd_empty),
+    .port1_cmd_full(ram2_p0_cmd_full),
+    .port1_wr_clk(ram2_p0_wr_clk),
+    .port1_wr_en(ram2_p0_wr_en),
+    .port1_wr_mask(ram2_p0_wr_mask),
+    .port1_wr_data(ram2_p0_wr_data),
+    .port1_wr_empty(ram2_p0_wr_empty),
+    .port1_wr_full(ram2_p0_wr_full),
+    .port1_wr_underrun(ram2_p0_wr_underrun),
+    .port1_wr_count(ram2_p0_wr_count),
+    .port1_wr_error(ram2_p0_wr_error),
+    .port1_rd_clk(ram2_p0_rd_clk),
+    .port1_rd_en(ram2_p0_rd_en),
+    .port1_rd_data(ram2_p0_rd_data),
+    .port1_rd_empty(ram2_p0_rd_empty),
+    .port1_rd_full(ram2_p0_rd_full),
+    .port1_rd_overflow(ram2_p0_rd_overflow),
+    .port1_rd_count(ram2_p0_rd_count),
+    .port1_rd_error(ram2_p0_rd_error),
+    // status
+    .busy()
 );
 
 endmodule
