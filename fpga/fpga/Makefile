@@ -10,6 +10,7 @@ PROM = xcf32p
 
 # Files for synthesis
 SYN_FILES = rtl/fpga.v
+SYN_FILES += rtl/fpga_core.v
 SYN_FILES += rtl/clock.v
 SYN_FILES += rtl/reset_stretch.v
 SYN_FILES += rtl/ddr2.v
