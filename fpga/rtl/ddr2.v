@@ -42,11 +42,6 @@ module ddr2 #(
     parameter SIMULATION             = "FALSE",
                                        // # = TRUE, Simulating the design. Useful to reduce the simulation time,
                                        // # = FALSE, Implementing the design.
-    parameter RST_ACT_LOW            = 0,
-                                       // # = 1 for active low reset,
-                                       // # = 0 for active high reset.
-    parameter INPUT_CLK_TYPE         = "SINGLE_ENDED",
-                                       // input clock type DIFFERENTIAL or SINGLE_ENDED
     parameter MEM_ADDR_ORDER         = "ROW_BANK_COLUMN",
                                        // The order in which user address is provided to the memory controller,
                                        // ROW_BANK_COLUMN or BANK_ROW_COLUMN
@@ -279,12 +274,6 @@ localparam DQ12_TAP_DELAY_VAL       = 0;
 localparam DQ13_TAP_DELAY_VAL       = 0;
 localparam DQ14_TAP_DELAY_VAL       = 0;
 localparam DQ15_TAP_DELAY_VAL       = 0;
-localparam MCB_USE_EXTERNAL_BUFPLL  = 1;
-localparam SMALL_DEVICE             = "FALSE";  // The parameter is set to TRUE for all packages of xc6slx9 device
-                                                // as most of them cannot fit the complete example design when the
-                                                // Chip scope modules are enabled
-localparam DBG_WR_STS_WIDTH         = 32;
-localparam DBG_RD_STS_WIDTH         = 32;
 localparam ARB_TIME0_SLOT           = {ARB_TIME_SLOT_0[17:15],  ARB_TIME_SLOT_0[14:12],  ARB_TIME_SLOT_0[11:9],  ARB_TIME_SLOT_0[8:6],  ARB_TIME_SLOT_0[5:3],  ARB_TIME_SLOT_0[2:0]};
 localparam ARB_TIME1_SLOT           = {ARB_TIME_SLOT_1[17:15],  ARB_TIME_SLOT_1[14:12],  ARB_TIME_SLOT_1[11:9],  ARB_TIME_SLOT_1[8:6],  ARB_TIME_SLOT_1[5:3],  ARB_TIME_SLOT_1[2:0]};
 localparam ARB_TIME2_SLOT           = {ARB_TIME_SLOT_2[17:15],  ARB_TIME_SLOT_2[14:12],  ARB_TIME_SLOT_2[11:9],  ARB_TIME_SLOT_2[8:6],  ARB_TIME_SLOT_2[5:3],  ARB_TIME_SLOT_2[2:0]};
