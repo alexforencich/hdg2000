@@ -147,7 +147,7 @@ def bench():
                               mosi=mosi,
                               miso=miso,
                               width=8,
-                              prescale=2,
+                              prescale=4,
                               cpol=0,
                               cpha=0,
                               tx_fifo=master_tx_queue,

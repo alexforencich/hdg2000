@@ -85,6 +85,10 @@ reg [DATA_WIDTH-1:0] output_axis_tdata_reg = 0, output_axis_tdata_next;
 reg output_axis_tvalid_reg = 0, output_axis_tvalid_next;
 reg output_axis_tlast_reg = 0, output_axis_tlast_next;
 
+reg cs_reg = 1;
+reg sck_reg = 0;
+reg mosi_reg = 0;
+
 reg miso_reg = 0, miso_next;
 
 reg busy_reg = 0;
@@ -99,9 +103,9 @@ assign miso = miso_reg;
 
 assign busy = busy_reg;
 
-reg sck_last = 0;
-wire sck_posedge = sck & !sck_last;
-wire sck_negedge = !sck & sck_last;
+reg sck_last_reg = 0;
+wire sck_posedge = sck_reg & !sck_last_reg;
+wire sck_negedge = !sck_reg & sck_last_reg;
 
 always @* begin
     state_next = 0;
@@ -121,7 +125,7 @@ always @* begin
 
     case (state_reg)
         STATE_IDLE: begin
-            if (cs) begin
+            if (cs_reg) begin
                 // cs deasserted
                 miso_next = 0;
                 state_next = STATE_IDLE;
@@ -144,7 +148,7 @@ always @* begin
         STATE_TRANSFER: begin
             if (sck_posedge) begin
                 // rising sck edge, read mosi
-                rx_data_next = {rx_data_reg[DATA_WIDTH-2:0], mosi};
+                rx_data_next = {rx_data_reg[DATA_WIDTH-2:0], mosi_reg};
                 state_next = STATE_TRANSFER;
             end else if (sck_negedge) begin
                 // falling sck edge, write miso
@@ -166,7 +170,7 @@ always @* begin
                     // wait for next event (don't know if end of frame yet)
                     state_next = STATE_WAIT;
                 end
-            end else if (cs) begin
+            end else if (cs_reg) begin
                 // premature end of frame
                 output_axis_tdata_next = 0;
                 output_axis_tvalid_next = 1;
@@ -177,7 +181,7 @@ always @* begin
             end
         end
         STATE_WAIT: begin
-            if (cs) begin
+            if (cs_reg) begin
                 // end of frame, transfer out
                 output_axis_tdata_next = rx_data_reg;
                 output_axis_tvalid_next = 1;
@@ -196,7 +200,7 @@ always @* begin
                     miso_next = 0;
                     tx_data_next = 0;
                 end
-                rx_data_next = mosi;
+                rx_data_next = mosi_reg;
                 bit_cnt_next = DATA_WIDTH-1;
                 state_next = STATE_TRANSFER;
             end else begin
@@ -212,7 +216,10 @@ always @(posedge clk or posedge rst) begin
         tx_data_reg <= 0;
         rx_data_reg <= 0;
         bit_cnt_reg <= 0;
-        sck_last <= 0;
+        cs_reg <= 1;
+        sck_reg <= 0;
+        mosi_reg <= 0;
+        sck_last_reg <= 0;
         input_axis_tready_reg <= 0;
         output_axis_tdata_reg <= 0;
         output_axis_tvalid_reg <= 0;
@@ -227,7 +234,10 @@ always @(posedge clk or posedge rst) begin
 
         bit_cnt_reg <= bit_cnt_next;
 
-        sck_last <= sck;
+        cs_reg <= cs;
+        sck_reg <= sck;
+        mosi_reg <= mosi;
+        sck_last_reg <= sck_reg;
 
         input_axis_tready_reg <= input_axis_tready_next;
 
