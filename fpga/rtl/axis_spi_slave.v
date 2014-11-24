@@ -75,8 +75,8 @@ localparam [1:0]
 
 reg [1:0] state_reg = STATE_IDLE, state_next;
 
-reg [DATA_WIDTH:0] tx_data_reg = 0, tx_data_next;
-reg [DATA_WIDTH:0] rx_data_reg = 0, rx_data_next;
+reg [DATA_WIDTH-1:0] tx_data_reg = 0, tx_data_next;
+reg [DATA_WIDTH-1:0] rx_data_reg = 0, rx_data_next;
 reg [4:0] bit_cnt_reg = 0, bit_cnt_next;
 
 reg input_axis_tready_reg = 0, input_axis_tready_next;
