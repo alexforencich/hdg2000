@@ -3,5 +3,8 @@
 # TIG for resets
 NET "clock_inst/*/reset_reg" TIG;
 
+# TIG for ext ref frequency measurement
+NET "clock_inst/ref_clk_src_reg" TIG;
+
 # TIG for BUFGMUX
 NET "clock_inst/clk_250mhz_ext_dcm" TIG;
