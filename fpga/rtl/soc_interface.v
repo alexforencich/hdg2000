@@ -268,23 +268,12 @@ always @* begin
                 if (input_axis_tlast) begin
                     // early end of frame
                     state_next = STATE_IDLE;
-                end else if (cmd_next[7:4] == 4'hA) begin
-                    // read command
+                end else if (cmd_next[7:4] == 4'hA || cmd_next[7:4] == 4'hB) begin
+                    // read or write command
                     bank_next = cmd_next[3:0];
                     byte_cnt_next = 0;
                     state_next = STATE_READ_ADDR;
-                    if (bank_next == 0 || bank_next == 1 || bank_next == 15) begin
-                        state_next = STATE_READ_ADDR;
-                    end else begin
-                        // invalid bank
-                        state_next = STATE_WAIT_LAST;
-                    end
-                end else if (cmd_next[7:4] == 4'hB) begin
-                    // write command
-                    bank_next = cmd_next[3:0];
-                    byte_cnt_next = 0;
-                    state_next = STATE_READ_ADDR;
-                    if (bank_next == 0 || bank_next == 1 || bank_next == 15) begin
+                    if (bank_next == 0 || bank_next == 1) begin
                         state_next = STATE_READ_ADDR;
                     end else begin
                         // invalid bank
