@@ -362,6 +362,268 @@ end
 
 /////////////////////////////////////////////////
 //                                             //
+// DDR2 RX path SRL FIFOs                      //
+//                                             //
+/////////////////////////////////////////////////
+
+// These help timing closure with the MCB read data path since Tmcbcko_RDDATA
+// is a very high 2.7 ns.  A LUT in SRL mode has a very low Tds of 90 ps,
+// compared to a LUT in RAM mode (Tds 730 ps) or a FF (Tdick 470 ps).
+
+wire ram1_p0_rd_en_fifo;
+wire [31:0] ram1_p0_rd_data_fifo;
+wire ram1_p0_rd_empty_fifo;
+wire ram1_p0_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram1_p0_rd_fifo (
+    .clk(ram1_p0_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram1_p0_rd_empty),
+    .write_data(ram1_p0_rd_data),
+    .read_en(ram1_p0_rd_en_fifo),
+    .read_data(ram1_p0_rd_data_fifo),
+    .full(ram1_p0_rd_full_fifo),
+    .empty(ram1_p0_rd_empty_fifo)
+);
+
+assign ram1_p0_rd_en = ~ram1_p0_rd_full;
+
+wire ram1_p1_rd_en_fifo;
+wire [31:0] ram1_p1_rd_data_fifo;
+wire ram1_p1_rd_empty_fifo;
+wire ram1_p1_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram1_p1_rd_fifo (
+    .clk(ram1_p1_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram1_p1_rd_empty),
+    .write_data(ram1_p1_rd_data),
+    .read_en(ram1_p1_rd_en_fifo),
+    .read_data(ram1_p1_rd_data_fifo),
+    .full(ram1_p1_rd_full_fifo),
+    .empty(ram1_p1_rd_empty_fifo)
+);
+
+assign ram1_p1_rd_en = ~ram1_p1_rd_full;
+
+wire ram1_p2_rd_en_fifo;
+wire [31:0] ram1_p2_rd_data_fifo;
+wire ram1_p2_rd_empty_fifo;
+wire ram1_p2_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram1_p2_rd_fifo (
+    .clk(ram1_p2_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram1_p2_rd_empty),
+    .write_data(ram1_p2_rd_data),
+    .read_en(ram1_p2_rd_en_fifo),
+    .read_data(ram1_p2_rd_data_fifo),
+    .full(ram1_p2_rd_full_fifo),
+    .empty(ram1_p2_rd_empty_fifo)
+);
+
+assign ram1_p2_rd_en = ~ram1_p2_rd_full;
+
+wire ram1_p3_rd_en_fifo;
+wire [31:0] ram1_p3_rd_data_fifo;
+wire ram1_p3_rd_empty_fifo;
+wire ram1_p3_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram1_p3_rd_fifo (
+    .clk(ram1_p3_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram1_p3_rd_empty),
+    .write_data(ram1_p3_rd_data),
+    .read_en(ram1_p3_rd_en_fifo),
+    .read_data(ram1_p3_rd_data_fifo),
+    .full(ram1_p3_rd_full_fifo),
+    .empty(ram1_p3_rd_empty_fifo)
+);
+
+assign ram1_p3_rd_en = ~ram1_p3_rd_full;
+
+wire ram1_p4_rd_en_fifo;
+wire [31:0] ram1_p4_rd_data_fifo;
+wire ram1_p4_rd_empty_fifo;
+wire ram1_p4_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram1_p4_rd_fifo (
+    .clk(ram1_p4_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram1_p4_rd_empty),
+    .write_data(ram1_p4_rd_data),
+    .read_en(ram1_p4_rd_en_fifo),
+    .read_data(ram1_p4_rd_data_fifo),
+    .full(ram1_p4_rd_full_fifo),
+    .empty(ram1_p4_rd_empty_fifo)
+);
+
+assign ram1_p4_rd_en = ~ram1_p4_rd_full;
+
+wire ram1_p5_rd_en_fifo;
+wire [31:0] ram1_p5_rd_data_fifo;
+wire ram1_p5_rd_empty_fifo;
+wire ram1_p5_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram1_p5_rd_fifo (
+    .clk(ram1_p5_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram1_p5_rd_empty),
+    .write_data(ram1_p5_rd_data),
+    .read_en(ram1_p5_rd_en_fifo),
+    .read_data(ram1_p5_rd_data_fifo),
+    .full(ram1_p5_rd_full_fifo),
+    .empty(ram1_p5_rd_empty_fifo)
+);
+
+assign ram1_p5_rd_en = ~ram1_p5_rd_full;
+
+wire ram2_p0_rd_en_fifo;
+wire [31:0] ram2_p0_rd_data_fifo;
+wire ram2_p0_rd_empty_fifo;
+wire ram2_p0_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram2_p0_rd_fifo (
+    .clk(ram2_p0_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram2_p0_rd_empty),
+    .write_data(ram2_p0_rd_data),
+    .read_en(ram2_p0_rd_en_fifo),
+    .read_data(ram2_p0_rd_data_fifo),
+    .full(ram2_p0_rd_full_fifo),
+    .empty(ram2_p0_rd_empty_fifo)
+);
+
+assign ram2_p0_rd_en = ~ram2_p0_rd_full;
+
+wire ram2_p1_rd_en_fifo;
+wire [31:0] ram2_p1_rd_data_fifo;
+wire ram2_p1_rd_empty_fifo;
+wire ram2_p1_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram2_p1_rd_fifo (
+    .clk(ram2_p1_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram2_p1_rd_empty),
+    .write_data(ram2_p1_rd_data),
+    .read_en(ram2_p1_rd_en_fifo),
+    .read_data(ram2_p1_rd_data_fifo),
+    .full(ram2_p1_rd_full_fifo),
+    .empty(ram2_p1_rd_empty_fifo)
+);
+
+assign ram2_p1_rd_en = ~ram2_p1_rd_full;
+
+wire ram2_p2_rd_en_fifo;
+wire [31:0] ram2_p2_rd_data_fifo;
+wire ram2_p2_rd_empty_fifo;
+wire ram2_p2_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram2_p2_rd_fifo (
+    .clk(ram2_p2_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram2_p2_rd_empty),
+    .write_data(ram2_p2_rd_data),
+    .read_en(ram2_p2_rd_en_fifo),
+    .read_data(ram2_p2_rd_data_fifo),
+    .full(ram2_p2_rd_full_fifo),
+    .empty(ram2_p2_rd_empty_fifo)
+);
+
+assign ram2_p2_rd_en = ~ram2_p2_rd_full;
+
+wire ram2_p3_rd_en_fifo;
+wire [31:0] ram2_p3_rd_data_fifo;
+wire ram2_p3_rd_empty_fifo;
+wire ram2_p3_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram2_p3_rd_fifo (
+    .clk(ram2_p3_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram2_p3_rd_empty),
+    .write_data(ram2_p3_rd_data),
+    .read_en(ram2_p3_rd_en_fifo),
+    .read_data(ram2_p3_rd_data_fifo),
+    .full(ram2_p3_rd_full_fifo),
+    .empty(ram2_p3_rd_empty_fifo)
+);
+
+assign ram2_p3_rd_en = ~ram2_p3_rd_full;
+
+wire ram2_p4_rd_en_fifo;
+wire [31:0] ram2_p4_rd_data_fifo;
+wire ram2_p4_rd_empty_fifo;
+wire ram2_p4_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram2_p4_rd_fifo (
+    .clk(ram2_p4_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram2_p4_rd_empty),
+    .write_data(ram2_p4_rd_data),
+    .read_en(ram2_p4_rd_en_fifo),
+    .read_data(ram2_p4_rd_data_fifo),
+    .full(ram2_p4_rd_full_fifo),
+    .empty(ram2_p4_rd_empty_fifo)
+);
+
+assign ram2_p4_rd_en = ~ram2_p4_rd_full;
+
+wire ram2_p5_rd_en_fifo;
+wire [31:0] ram2_p5_rd_data_fifo;
+wire ram2_p5_rd_empty_fifo;
+wire ram2_p5_rd_full_fifo;
+
+srl_fifo_reg #(
+    .WIDTH(32)
+)
+ram2_p5_rd_fifo (
+    .clk(ram2_p5_rd_clk),
+    .rst(rst_250mhz_int),
+    .write_en(~ram2_p5_rd_empty),
+    .write_data(ram2_p5_rd_data),
+    .read_en(ram2_p5_rd_en_fifo),
+    .read_data(ram2_p5_rd_data_fifo),
+    .full(ram2_p5_rd_full_fifo),
+    .empty(ram2_p5_rd_empty_fifo)
+);
+
+assign ram2_p5_rd_en = ~ram2_p5_rd_full;
+
+/////////////////////////////////////////////////
+//                                             //
 // SoC Interface                               //
 //                                             //
 /////////////////////////////////////////////////
@@ -433,10 +695,10 @@ soc_interface_inst (
     .port0_wr_count(ram1_p0_wr_count),
     .port0_wr_error(ram1_p0_wr_error),
     .port0_rd_clk(ram1_p0_rd_clk),
-    .port0_rd_en(ram1_p0_rd_en),
-    .port0_rd_data(ram1_p0_rd_data),
-    .port0_rd_empty(ram1_p0_rd_empty),
-    .port0_rd_full(ram1_p0_rd_full),
+    .port0_rd_en(ram1_p0_rd_en_fifo),
+    .port0_rd_data(ram1_p0_rd_data_fifo),
+    .port0_rd_empty(ram1_p0_rd_empty_fifo),
+    .port0_rd_full(ram1_p0_rd_full_fifo),
     .port0_rd_overflow(ram1_p0_rd_overflow),
     .port0_rd_count(ram1_p0_rd_count),
     .port0_rd_error(ram1_p0_rd_error),
@@ -458,15 +720,104 @@ soc_interface_inst (
     .port1_wr_count(ram2_p0_wr_count),
     .port1_wr_error(ram2_p0_wr_error),
     .port1_rd_clk(ram2_p0_rd_clk),
-    .port1_rd_en(ram2_p0_rd_en),
-    .port1_rd_data(ram2_p0_rd_data),
-    .port1_rd_empty(ram2_p0_rd_empty),
-    .port1_rd_full(ram2_p0_rd_full),
+    .port1_rd_en(ram2_p0_rd_en_fifo),
+    .port1_rd_data(ram2_p0_rd_data_fifo),
+    .port1_rd_empty(ram2_p0_rd_empty_fifo),
+    .port1_rd_full(ram2_p0_rd_full_fifo),
     .port1_rd_overflow(ram2_p0_rd_overflow),
     .port1_rd_count(ram2_p0_rd_count),
     .port1_rd_error(ram2_p0_rd_error),
     // status
     .busy()
 );
+
+// currenly unused signals
+assign ram1_p1_cmd_clk = 0;
+assign ram1_p1_cmd_en = 0;
+assign ram1_p1_cmd_instr = 0;
+assign ram1_p1_cmd_bl = 0;
+assign ram1_p1_cmd_byte_addr = 0;
+assign ram1_p1_wr_clk = 0;
+assign ram1_p1_wr_en = 0;
+assign ram1_p1_wr_mask = 0;
+assign ram1_p1_wr_data = 0;
+assign ram1_p1_rd_clk = 0;
+assign ram1_p1_rd_en_fifo = 0;
+
+assign ram1_p2_cmd_clk = 0;
+assign ram1_p2_cmd_en = 0;
+assign ram1_p2_cmd_instr = 0;
+assign ram1_p2_cmd_bl = 0;
+assign ram1_p2_cmd_byte_addr = 0;
+assign ram1_p2_rd_clk = 0;
+assign ram1_p2_rd_en_fifo = 0;
+
+assign ram1_p3_cmd_clk = 0;
+assign ram1_p3_cmd_en = 0;
+assign ram1_p3_cmd_instr = 0;
+assign ram1_p3_cmd_bl = 0;
+assign ram1_p3_cmd_byte_addr = 0;
+assign ram1_p3_rd_clk = 0;
+assign ram1_p3_rd_en_fifo = 0;
+
+assign ram1_p4_cmd_clk = 0;
+assign ram1_p4_cmd_en = 0;
+assign ram1_p4_cmd_instr = 0;
+assign ram1_p4_cmd_bl = 0;
+assign ram1_p4_cmd_byte_addr = 0;
+assign ram1_p4_rd_clk = 0;
+assign ram1_p4_rd_en_fifo = 0;
+
+assign ram1_p5_cmd_clk = 0;
+assign ram1_p5_cmd_en = 0;
+assign ram1_p5_cmd_instr = 0;
+assign ram1_p5_cmd_bl = 0;
+assign ram1_p5_cmd_byte_addr = 0;
+assign ram1_p5_rd_clk = 0;
+assign ram1_p5_rd_en_fifo = 0;
+
+assign ram2_p1_cmd_clk = 0;
+assign ram2_p1_cmd_en = 0;
+assign ram2_p1_cmd_instr = 0;
+assign ram2_p1_cmd_bl = 0;
+assign ram2_p1_cmd_byte_addr = 0;
+assign ram2_p1_wr_clk = 0;
+assign ram2_p1_wr_en = 0;
+assign ram2_p1_wr_mask = 0;
+assign ram2_p1_wr_data = 0;
+assign ram2_p1_rd_clk = 0;
+assign ram2_p1_rd_en_fifo = 0;
+
+assign ram2_p2_cmd_clk = 0;
+assign ram2_p2_cmd_en = 0;
+assign ram2_p2_cmd_instr = 0;
+assign ram2_p2_cmd_bl = 0;
+assign ram2_p2_cmd_byte_addr = 0;
+assign ram2_p2_rd_clk = 0;
+assign ram2_p2_rd_en_fifo = 0;
+
+assign ram2_p3_cmd_clk = 0;
+assign ram2_p3_cmd_en = 0;
+assign ram2_p3_cmd_instr = 0;
+assign ram2_p3_cmd_bl = 0;
+assign ram2_p3_cmd_byte_addr = 0;
+assign ram2_p3_rd_clk = 0;
+assign ram2_p3_rd_en_fifo = 0;
+
+assign ram2_p4_cmd_clk = 0;
+assign ram2_p4_cmd_en = 0;
+assign ram2_p4_cmd_instr = 0;
+assign ram2_p4_cmd_bl = 0;
+assign ram2_p4_cmd_byte_addr = 0;
+assign ram2_p4_rd_clk = 0;
+assign ram2_p4_rd_en_fifo = 0;
+
+assign ram2_p5_cmd_clk = 0;
+assign ram2_p5_cmd_en = 0;
+assign ram2_p5_cmd_instr = 0;
+assign ram2_p5_cmd_bl = 0;
+assign ram2_p5_cmd_byte_addr = 0;
+assign ram2_p5_rd_clk = 0;
+assign ram2_p5_rd_en_fifo = 0;
 
 endmodule

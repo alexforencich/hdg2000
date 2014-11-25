@@ -37,6 +37,7 @@ srcs = []
 srcs.append("../rtl/%s.v" % module)
 srcs.append("../rtl/axis_spi_slave.v")
 srcs.append("../rtl/soc_interface.v")
+srcs.append("../rtl/srl_fifo_reg.v")
 srcs.append("test_%s.v" % module)
 
 src = ' '.join(srcs)

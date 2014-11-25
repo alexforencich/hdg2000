@@ -17,6 +17,7 @@ SYN_FILES += rtl/ddr2.v
 SYN_FILES += rtl/ddr2_clock.v
 SYN_FILES += rtl/axis_spi_slave.v
 SYN_FILES += rtl/soc_interface.v
+SYN_FILES += rtl/srl_fifo_reg.v
 SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/memc_wrapper.v
 SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/mcb_controller/iodrp_controller.v
 SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/mcb_controller/iodrp_mcb_controller.v
