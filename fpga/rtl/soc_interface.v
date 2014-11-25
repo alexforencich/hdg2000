@@ -265,7 +265,10 @@ always @* begin
             if (input_axis_tready & input_axis_tvalid) begin
                 // get command
                 cmd_next = input_axis_tdata;
-                if (cmd_next[7:4] == 4'hA) begin
+                if (input_axis_tlast) begin
+                    // early end of frame
+                    state_next = STATE_IDLE;
+                end else if (cmd_next[7:4] == 4'hA) begin
                     // read command
                     bank_next = cmd_next[3:0];
                     byte_cnt_next = 0;
