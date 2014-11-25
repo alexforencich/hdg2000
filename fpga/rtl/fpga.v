@@ -29,7 +29,9 @@ THE SOFTWARE.
 /*
  * Hantek HDG2000 FPGA
  */
-module fpga
+module fpga #(
+    parameter SIMULATION = "FALSE"
+)
 (
     // clocks
     input  wire  clk_10mhz_int,
@@ -465,7 +467,10 @@ ddr2_clock_inst
     .mcb_clk_locked(mcb_clk_locked)
 );
 
-ddr2
+ddr2 #(
+    .MEMCLK_PERIOD(3200),
+    .SIMULATION(SIMULATION)
+)
 ddr2_ram1_inst
 (
     .async_rst(rst_250mhz_int | ~mcb_clk_locked),
@@ -610,7 +615,10 @@ ddr2_ram1_inst
     .p5_rd_error(ram1_p5_rd_error)
 );
 
-ddr2
+ddr2 #(
+    .MEMCLK_PERIOD(3200),
+    .SIMULATION(SIMULATION)
+)
 ddr2_ram2_inst
 (
     .async_rst(rst_250mhz_int | ~mcb_clk_locked),
