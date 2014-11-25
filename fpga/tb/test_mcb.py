@@ -131,7 +131,7 @@ def bench():
         current_test.next = 2
 
         yield clk.posedge
-        port0_wr_mask.next = 0xf
+        port0_wr_mask.next = 0x0
         port0_wr_data.next = 0x44332211
         port0_wr_en.next = 1
         

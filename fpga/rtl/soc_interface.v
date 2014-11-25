@@ -324,10 +324,10 @@ always @* begin
                     end else if (cmd_reg[7:4] == 4'hB) begin
                         // write command
                         case (byte_cnt_next[1:0])
-                            2'd0: port_wr_mask_next = 4'b1111;
-                            2'd1: port_wr_mask_next = 4'b1110;
-                            2'd2: port_wr_mask_next = 4'b1100;
-                            2'd3: port_wr_mask_next = 4'b1000;
+                            2'd0: port_wr_mask_next = 4'b0000;
+                            2'd1: port_wr_mask_next = 4'b0001;
+                            2'd2: port_wr_mask_next = 4'b0011;
+                            2'd3: port_wr_mask_next = 4'b0111;
                         endcase
                         data_next = 0;
                         state_next = STATE_MCB_WRITE;
@@ -401,10 +401,10 @@ always @* begin
                     // end of frame or end of word
                     // calculate mask
                     case (byte_cnt_reg[1:0])
-                        2'd0: port_wr_mask_next = port_wr_mask_next & 4'b0001;
-                        2'd1: port_wr_mask_next = port_wr_mask_next & 4'b0011;
-                        2'd2: port_wr_mask_next = port_wr_mask_next & 4'b0111;
-                        2'd3: port_wr_mask_next = port_wr_mask_next & 4'b1111;
+                        2'd0: port_wr_mask_next = port_wr_mask_next | 4'b1110;
+                        2'd1: port_wr_mask_next = port_wr_mask_next | 4'b1100;
+                        2'd2: port_wr_mask_next = port_wr_mask_next | 4'b1000;
+                        2'd3: port_wr_mask_next = port_wr_mask_next | 4'b0000;
                     endcase
                     // write, burst length 1
                     port_cmd_instr_next = 3'b000;

@@ -91,7 +91,7 @@ class MCB(object):
                                 elif pw == 128:
                                     data = struct.pack('<Q', data & 2**64-1) + struct.pack('<Q', data >> 64)
                                 for l in range(len(data)):
-                                    if mask & (1 << l):
+                                    if not mask & (1 << l):
                                         self.mem.write(data[l])
                                     else:
                                         self.mem.seek(1, 1)
