@@ -91,6 +91,8 @@ def dut_fpga_core(current_test,
                 dac_csb,
                 dac_reset,
 
+                ram1_calib_done,
+
                 ram1_p0_cmd_clk,
                 ram1_p0_cmd_en,
                 ram1_p0_cmd_instr,
@@ -204,6 +206,8 @@ def dut_fpga_core(current_test,
                 ram1_p5_rd_overflow,
                 ram1_p5_rd_count,
                 ram1_p5_rd_error,
+
+                ram2_calib_done,
 
                 ram2_p0_cmd_clk,
                 ram2_p0_cmd_en,
@@ -370,6 +374,8 @@ def dut_fpga_core(current_test,
                 dac_csb=dac_csb,
                 dac_reset=dac_reset,
 
+                ram1_calib_done=ram1_calib_done,
+
                 ram1_p0_cmd_clk=ram1_p0_cmd_clk,
                 ram1_p0_cmd_en=ram1_p0_cmd_en,
                 ram1_p0_cmd_instr=ram1_p0_cmd_instr,
@@ -483,6 +489,8 @@ def dut_fpga_core(current_test,
                 ram1_p5_rd_overflow=ram1_p5_rd_overflow,
                 ram1_p5_rd_count=ram1_p5_rd_count,
                 ram1_p5_rd_error=ram1_p5_rd_error,
+
+                ram2_calib_done=ram2_calib_done,
 
                 ram2_p0_cmd_clk=ram2_p0_cmd_clk,
                 ram2_p0_cmd_en=ram2_p0_cmd_en,
@@ -659,6 +667,8 @@ def bench():
     dac_reset = Signal(bool(0))
 
     # ram 1 MCB (U8)
+    ram1_calib_done = Signal(bool(0))
+
     ram1_p0_cmd_clk = Signal(bool(0))
     ram1_p0_cmd_en = Signal(bool(0))
     ram1_p0_cmd_instr = Signal(intbv(0)[3:])
@@ -774,6 +784,8 @@ def bench():
     ram1_p5_rd_error = Signal(bool(0))
 
     # ram 2 MCB (U12)
+    ram2_calib_done = Signal(bool(0))
+
     ram2_p0_cmd_clk = Signal(bool(0))
     ram2_p0_cmd_en = Signal(bool(0))
     ram2_p0_cmd_instr = Signal(intbv(0)[3:])
@@ -1204,6 +1216,8 @@ def bench():
                         dac_csb,
                         dac_reset,
 
+                        ram1_calib_done,
+
                         ram1_p0_cmd_clk,
                         ram1_p0_cmd_en,
                         ram1_p0_cmd_instr,
@@ -1317,6 +1331,8 @@ def bench():
                         ram1_p5_rd_overflow,
                         ram1_p5_rd_count,
                         ram1_p5_rd_error,
+
+                        ram2_calib_done,
 
                         ram2_p0_cmd_clk,
                         ram2_p0_cmd_en,
@@ -1459,6 +1475,14 @@ def bench():
         rst_250mhz.next = 0
         rst_10mhz.next = 0
         yield clk_250mhz_int.posedge
+        yield delay(100)
+        yield clk_250mhz_int.posedge
+
+        yield delay(1000)
+        yield clk_250mhz_int.posedge
+        ram1_calib_done.next = True
+        ram2_calib_done.next = True
+
         yield delay(100)
         yield clk_250mhz_int.posedge
 

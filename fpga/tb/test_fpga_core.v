@@ -87,6 +87,8 @@ wire dac_csb;
 wire dac_reset;
 
 // ram 1 MCB (U8)
+reg ram1_calib_done = 0;
+
 wire ram1_p0_cmd_clk;
 wire ram1_p0_cmd_en;
 wire [2:0] ram1_p0_cmd_instr;
@@ -202,6 +204,8 @@ reg [6:0] ram1_p5_rd_count = 0;
 reg ram1_p5_rd_error = 0;
 
 // ram 2 MCB (U12)
+reg ram2_calib_done = 0;
+
 wire ram2_p0_cmd_clk;
 wire ram2_p0_cmd_en;
 wire [2:0] ram2_p0_cmd_instr;
@@ -334,6 +338,7 @@ initial begin
                 adc_sdo,
                 adc_eoc,
                 dac_sdo,
+                ram1_calib_done,
                 ram1_p0_cmd_empty,
                 ram1_p0_cmd_full,
                 ram1_p0_wr_empty,
@@ -392,6 +397,7 @@ initial begin
                 ram1_p5_rd_overflow,
                 ram1_p5_rd_count,
                 ram1_p5_rd_error,
+                ram2_calib_done,
                 ram2_p0_cmd_empty,
                 ram2_p0_cmd_full,
                 ram2_p0_wr_empty,
@@ -633,6 +639,8 @@ UUT (
     .dac_reset(dac_reset),
 
     // ram 1 MCB (U8)
+    .ram1_calib_done(ram1_calib_done),
+
     .ram1_p0_cmd_clk(ram1_p0_cmd_clk),
     .ram1_p0_cmd_en(ram1_p0_cmd_en),
     .ram1_p0_cmd_instr(ram1_p0_cmd_instr),
@@ -748,6 +756,8 @@ UUT (
     .ram1_p5_rd_error(ram1_p5_rd_error),
 
     // ram 2 MCB (U12)
+    .ram2_calib_done(ram2_calib_done),
+
     .ram2_p0_cmd_clk(ram2_p0_cmd_clk),
     .ram2_p0_cmd_en(ram2_p0_cmd_en),
     .ram2_p0_cmd_instr(ram2_p0_cmd_instr),

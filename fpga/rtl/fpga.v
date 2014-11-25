@@ -227,6 +227,8 @@ wire mcb_clk_180;
 wire mcb_drp_clk;
 wire mcb_clk_locked;
 
+wire ram1_calib_done;
+
 wire ram1_p0_cmd_clk;
 wire ram1_p0_cmd_en;
 wire [2:0] ram1_p0_cmd_instr;
@@ -340,6 +342,8 @@ wire ram1_p5_rd_full;
 wire ram1_p5_rd_overflow;
 wire [6:0] ram1_p5_rd_count;
 wire ram1_p5_rd_error;
+
+wire ram2_calib_done;
 
 wire ram2_p0_cmd_clk;
 wire ram2_p0_cmd_en;
@@ -479,7 +483,7 @@ ddr2_ram1_inst
     .mcb_drp_clk(mcb_drp_clk),
     .mcb_clk_locked(mcb_clk_locked),
 
-    .calib_done(),
+    .calib_done(ram1_calib_done),
 
     .mcbx_dram_a(ram1_a),
     .mcbx_dram_ba(ram1_ba),
@@ -627,7 +631,7 @@ ddr2_ram2_inst
     .mcb_drp_clk(mcb_drp_clk),
     .mcb_clk_locked(mcb_clk_locked),
 
-    .calib_done(),
+    .calib_done(ram2_calib_done),
 
     .mcbx_dram_a(ram2_a),
     .mcbx_dram_ba(ram2_ba),
@@ -829,6 +833,8 @@ fpga_core_inst
     .dac_reset(dac_reset_int),
 
     // ram 1 MCB (U8)
+    .ram1_calib_done(ram1_calib_done),
+
     .ram1_p0_cmd_clk(ram1_p0_cmd_clk),
     .ram1_p0_cmd_en(ram1_p0_cmd_en),
     .ram1_p0_cmd_instr(ram1_p0_cmd_instr),
@@ -944,6 +950,8 @@ fpga_core_inst
     .ram1_p5_rd_error(ram1_p5_rd_error),
 
     // ram 2 MCB (U12)
+    .ram2_calib_done(ram2_calib_done),
+
     .ram2_p0_cmd_clk(ram2_p0_cmd_clk),
     .ram2_p0_cmd_en(ram2_p0_cmd_en),
     .ram2_p0_cmd_instr(ram2_p0_cmd_instr),

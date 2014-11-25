@@ -88,6 +88,8 @@ module fpga_core
     output wire dac_reset,
 
     // ram 1 MCB (U8)
+    input  wire ram1_calib_done,
+
     output wire ram1_p0_cmd_clk,
     output wire ram1_p0_cmd_en,
     output wire [2:0] ram1_p0_cmd_instr,
@@ -203,6 +205,8 @@ module fpga_core
     input  wire ram1_p5_rd_error,
 
     // ram 2 MCB (U12)
+    input  wire ram2_calib_done,
+
     output wire ram2_p0_cmd_clk,
     output wire ram2_p0_cmd_en,
     output wire [2:0] ram2_p0_cmd_instr,
