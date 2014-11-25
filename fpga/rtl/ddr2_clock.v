@@ -79,7 +79,7 @@ PLL_ADV #
     .DIVCLK_DIVIDE         (2),
     .CLKFBOUT_MULT         (5),
     .CLKFBOUT_PHASE        (0.0),
-    .REF_JITTER            (0.005000)
+    .REF_JITTER            (0.025000)
 )
 mcb_pll
 (
