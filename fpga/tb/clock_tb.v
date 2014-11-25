@@ -47,16 +47,16 @@ reg clk_10mhz_ext_enable = 0;
 
 always begin : clock10MHz
     clk_10mhz_int = 1'b1;
-    #101;
+    #51;
     clk_10mhz_int = 1'b0;
-    #101;
+    #51;
 end
 
 always begin : clock10MHz_ext
     clk_10mhz_ext = clk_10mhz_ext_enable;
-    #100;
+    #50;
     clk_10mhz_ext = 1'b0;
-    #100;
+    #50;
 end
 
 initial begin : stimulus
