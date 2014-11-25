@@ -346,6 +346,14 @@ bufpll_mcb_inst
     .LOCK           (pll_lock)
 );
 
+wire async_rst_int;
+
+reset_stretch #(.N(4)) rst_inst (
+    .clk(mcb_drp_clk),
+    .rst_in(async_rst | ~ref_freq_valid),
+    .rst_out(async_rst_int)
+);
+
 // MCB wrapper
 memc_wrapper #
 (
@@ -431,7 +439,7 @@ memc_wrapper #
 )
 memc_wrapper_inst
 (
-    .async_rst                      (async_rst),
+    .async_rst                      (async_rst_int),
     .calib_done                     (calib_done),
 
     .sysclk_2x                      (sysclk_2x),
