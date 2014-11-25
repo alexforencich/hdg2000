@@ -350,7 +350,7 @@ wire async_rst_int;
 
 reset_stretch #(.N(4)) rst_inst (
     .clk(mcb_drp_clk),
-    .rst_in(async_rst | ~ref_freq_valid),
+    .rst_in(async_rst | ~pll_lock),
     .rst_out(async_rst_int)
 );
 
