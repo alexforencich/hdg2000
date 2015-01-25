@@ -25,43 +25,96 @@ THE SOFTWARE.
 
 from myhdl import *
 import os
-from Queue import Queue
 
 import wb
 
+module = 'wb_ram'
+
+srcs = []
+
+srcs.append("../rtl/%s.v" % module)
+srcs.append("test_%s.v" % module)
+
+src = ' '.join(srcs)
+
+build_cmd = "iverilog -o test_%s.vvp %s" % (module, src)
+
+def dut_wb_ram(clk,
+               rst,
+               current_test,
+               adr_i,
+               dat_i,
+               dat_o,
+               we_i,
+               sel_i,
+               stb_i,
+               ack_o,
+               cyc_i):
+
+    if os.system(build_cmd):
+        raise Exception("Error running build command")
+    return Cosimulation("vvp -m myhdl test_%s.vvp -lxt2" % module,
+                clk=clk,
+                rst=rst,
+                current_test=current_test,
+                adr_i=adr_i,
+                dat_i=dat_i,
+                dat_o=dat_o,
+                we_i=we_i,
+                sel_i=sel_i,
+                stb_i=stb_i,
+                ack_o=ack_o,
+                cyc_i=cyc_i)
+
 def bench():
+
+    # Parameters
+    DATA_WIDTH = 32
+    ADDR_WIDTH = 16
+    SELECT_WIDTH = 4
 
     # Inputs
     clk = Signal(bool(0))
     rst = Signal(bool(0))
     current_test = Signal(intbv(0)[8:])
 
-    port0_adr_i = Signal(intbv(0)[32:])
-    port0_dat_i = Signal(intbv(0)[32:])
-    port0_we_i = Signal(bool(0))
-    port0_sel_i = Signal(intbv(0)[4:])
-    port0_stb_i = Signal(bool(0))
-    port0_cyc_i = Signal(bool(0))
+    adr_i = Signal(intbv(0)[ADDR_WIDTH:])
+    dat_i = Signal(intbv(0)[DATA_WIDTH:])
+    we_i = Signal(bool(0))
+    sel_i = Signal(intbv(0)[SELECT_WIDTH:])
+    stb_i = Signal(bool(0))
+    cyc_i = Signal(bool(0))
 
     # Outputs
-    port0_dat_o = Signal(intbv(0)[32:])
-    port0_ack_o = Signal(bool(0))
+    dat_o = Signal(intbv(0)[DATA_WIDTH:])
+    ack_o = Signal(bool(0))
 
-    # WB RAM model
-    wb_ram_inst = wb.WBRam(2**16)
+    # WB master
+    wbm_inst = wb.WBMaster()
 
-    wb_ram_port0 = wb_ram_inst.create_port(clk,
-                                           adr_i=port0_adr_i,
-                                           dat_i=port0_dat_i,
-                                           dat_o=port0_dat_o,
-                                           we_i=port0_we_i,
-                                           sel_i=port0_sel_i,
-                                           stb_i=port0_stb_i,
-                                           ack_o=port0_ack_o,
-                                           cyc_i=port0_cyc_i,
-                                           latency=1,
-                                           async=False,
-                                           name='port0')
+    wbm_logic = wbm_inst.create_logic(clk,
+                                      adr_o=adr_i,
+                                      dat_i=dat_o,
+                                      dat_o=dat_i,
+                                      we_o=we_i,
+                                      sel_o=sel_i,
+                                      stb_o=stb_i,
+                                      ack_i=ack_o,
+                                      cyc_o=cyc_i,
+                                      name='master')
+
+    # DUT
+    dut = dut_wb_ram(clk,
+                     rst,
+                     current_test,
+                     adr_i,
+                     dat_i,
+                     dat_o,
+                     we_i,
+                     sel_i,
+                     stb_i,
+                     ack_o,
+                     cyc_i)
 
     @always(delay(4))
     def clkgen():
@@ -79,161 +132,61 @@ def bench():
         yield clk.posedge
 
         yield clk.posedge
-        print("test 1: baseline")
+        print("test 1: read and write")
         current_test.next = 1
 
-        data = wb_ram_inst.read_mem(0, 32)
-        for i in range(0, len(data), 16):
-            print(" ".join("{:02x}".format(ord(c)) for c in data[i:i+16]))
+        wbm_inst.init_write(4, b'\x11\x22\x33\x44')
+
+        yield cyc_i.negedge
+        yield clk.posedge
+        yield clk.posedge
+
+        wbm_inst.init_read(4, 4)
+
+        yield cyc_i.negedge
+        yield clk.posedge
+        yield clk.posedge
+        
+        data = wbm_inst.get_read_data()
+        assert data[0] == 4
+        assert data[1] == b'\x11\x22\x33\x44'
 
         yield delay(100)
 
         yield clk.posedge
-        print("test 2: direct write")
+        print("test 2: various reads and writes")
         current_test.next = 2
-
-        wb_ram_inst.write_mem(0, b'test')
-
-        data = wb_ram_inst.read_mem(0, 32)
-        for i in range(0, len(data), 16):
-            print(" ".join("{:02x}".format(ord(c)) for c in data[i:i+16]))
-
-        assert wb_ram_inst.read_mem(0,4) == b'test'
-
-        yield delay(100)
-
-        yield clk.posedge
-        print("test 2: write via port0")
-        current_test.next = 2
-
-        yield clk.posedge
-        port0_adr_i.next = 4
-        port0_dat_i.next = 0x44332211
-        port0_sel_i.next = 0xF
-        port0_we_i.next = 1
-
-        port0_cyc_i.next = 1
-        port0_stb_i.next = 1
-
-        yield port0_ack_o.posedge
-        yield clk.posedge
-        port0_we_i.next = 0
-        port0_cyc_i.next = 0
-        port0_stb_i.next = 0
-
-        yield clk.posedge
-        yield clk.posedge
-
-        data = wb_ram_inst.read_mem(0, 32)
-        for i in range(0, len(data), 16):
-            print(" ".join("{:02x}".format(ord(c)) for c in data[i:i+16]))
-
-        assert wb_ram_inst.read_mem(4,4) == b'\x11\x22\x33\x44'
-
-        yield delay(100)
-
-        yield clk.posedge
-        print("test 3: read via port0")
-        current_test.next = 3
-
-        yield clk.posedge
-        port0_adr_i.next = 4
-        port0_we_i.next = 0
-
-        port0_cyc_i.next = 1
-        port0_stb_i.next = 1
-
-        yield port0_ack_o.posedge
-        yield clk.posedge
-        port0_we_i.next = 0
-        port0_cyc_i.next = 0
-        port0_stb_i.next = 0
-
-        assert port0_dat_o == 0x44332211
-
-        yield delay(100)
-
-        yield clk.posedge
-        print("test 4: various writes")
-        current_test.next = 4
 
         for length in range(1,8):
             for offset in range(4):
-                yield clk.posedge
-                sel_start = ((2**(4)-1) << offset % 4) & (2**(4)-1)
-                sel_end = ((2**(4)-1) >> (4 - (((offset + int(length/1) - 1) % 4) + 1)))
-                cycles = int((length + 4-1 + (offset % 4)) / 4)
-                i = 1
-                
-                port0_cyc_i.next = 1
-                port0_stb_i.next = 1
-                port0_we_i.next = 1
+                wbm_inst.init_write(256*(16*offset+length)+offset, b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length])
 
-                port0_adr_i.next = 256*(16*offset+length)
-                val = 0
-                for j in range(4):
-                    if j >= offset % 4 and (cycles > 1 or j < (((offset + int(length/1) - 1) % 4) + 1)):
-                        val |= (0x11 * i) << j*8
-                        i += 1
-                port0_dat_i.next = val
-                if cycles == 1:
-                    port0_sel_i.next = sel_start & sel_end
-                else:
-                    port0_sel_i.next = sel_start
-
-                yield port0_ack_o.posedge
-                yield clk.posedge
-
-                for k in range(1,cycles-1):
-                    port0_adr_i.next = 256*(16*offset+length)+4*k
-                    val = 0
-                    for j in range(4):
-                        val |= (0x11 * i) << j*8
-                        i += 1
-                    port0_dat_i.next = val
-                    port0_sel_i.next = 2**(4)-1
-
-                    yield port0_ack_o.posedge
-                    yield clk.posedge
-
-                if cycles > 1:
-                    port0_adr_i.next = 256*(16*offset+length)+4*(cycles-1)
-                    val = 0
-                    for j in range(4):
-                        if j < (((offset + int(length/1) - 1) % 4) + 1):
-                            val |= (0x11 * i) << j*8
-                            i += 1
-                    port0_dat_i.next = val
-                    port0_sel_i.next = sel_end
-
-                    yield port0_ack_o.posedge
-                    yield clk.posedge
-
-                port0_we_i.next = 0
-                port0_cyc_i.next = 0
-                port0_stb_i.next = 0
-
+                yield cyc_i.negedge
                 yield clk.posedge
                 yield clk.posedge
 
-                data = wb_ram_inst.read_mem(256*(16*offset+length), 32)
-                for i in range(0, len(data), 16):
-                    print(" ".join("{:02x}".format(ord(c)) for c in data[i:i+16]))
+        for length in range(1,8):
+            for offset in range(4):
+                wbm_inst.init_read(256*(16*offset+length)+offset, length)
 
-                assert wb_ram_inst.read_mem(256*(16*offset+length)+offset,length) == b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length]
+                yield cyc_i.negedge
+                yield clk.posedge
+                yield clk.posedge
+
+                data = wbm_inst.get_read_data()
+                assert data[0] == 256*(16*offset+length)+offset
+                assert data[1] == b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length]
 
         yield delay(100)
 
         raise StopSimulation
 
-    return wb_ram_port0, clkgen, check
+    return dut, wbm_logic, clkgen, check
 
 def test_bench():
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     sim = Simulation(bench())
     sim.run()
 
 if __name__ == '__main__':
     print("Running test...")
     test_bench()
-

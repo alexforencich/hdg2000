@@ -47,20 +47,6 @@ def bench():
     port0_dat_o = Signal(intbv(0)[32:])
     port0_ack_o = Signal(bool(0))
 
-    # WB master
-    wb_master_inst = wb.WBMaster()
-
-    wb_master_logic = wb_master_inst.create_logic(clk,
-                                                  adr_o=port0_adr_i,
-                                                  dat_i=port0_dat_o,
-                                                  dat_o=port0_dat_i,
-                                                  we_o=port0_we_i,
-                                                  sel_o=port0_sel_i,
-                                                  stb_o=port0_stb_i,
-                                                  ack_i=port0_ack_o,
-                                                  cyc_o=port0_cyc_i,
-                                                  name='master')
-
     # WB RAM model
     wb_ram_inst = wb.WBRam(2**16)
 
@@ -114,13 +100,27 @@ def bench():
 
         assert wb_ram_inst.read_mem(0,4) == b'test'
 
+        yield delay(100)
+
         yield clk.posedge
-        print("test 3: write via port0")
-        current_test.next = 3
+        print("test 2: write via port0")
+        current_test.next = 2
 
-        wb_master_inst.init_write(4, b'\x11\x22\x33\x44')
+        yield clk.posedge
+        port0_adr_i.next = 4
+        port0_dat_i.next = 0x44332211
+        port0_sel_i.next = 0xF
+        port0_we_i.next = 1
 
-        yield port0_cyc_i.negedge
+        port0_cyc_i.next = 1
+        port0_stb_i.next = 1
+
+        yield port0_ack_o.posedge
+        yield clk.posedge
+        port0_we_i.next = 0
+        port0_cyc_i.next = 0
+        port0_stb_i.next = 0
+
         yield clk.posedge
         yield clk.posedge
 
@@ -133,30 +133,105 @@ def bench():
         yield delay(100)
 
         yield clk.posedge
-        print("test 4: read via port0")
-        current_test.next = 4
+        print("test 3: read via port0")
+        current_test.next = 3
 
-        wb_master_inst.init_read(4, 4)
-
-        yield port0_cyc_i.negedge
         yield clk.posedge
-        yield clk.posedge
+        port0_adr_i.next = 4
+        port0_we_i.next = 0
 
-        data = wb_master_inst.get_read_data()
-        assert data[0] == 4
-        assert data[1] == b'\x11\x22\x33\x44'
+        port0_cyc_i.next = 1
+        port0_stb_i.next = 1
+
+        yield port0_ack_o.posedge
+        yield clk.posedge
+        port0_we_i.next = 0
+        port0_cyc_i.next = 0
+        port0_stb_i.next = 0
+
+        assert port0_dat_o == 0x44332211
 
         yield delay(100)
 
         yield clk.posedge
-        print("test 5: various writes")
-        current_test.next = 5
+        print("test 4: various writes")
+        current_test.next = 4
 
         for length in range(1,8):
             for offset in range(4):
-                wb_master_inst.init_write(256*(16*offset+length)+offset, b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length])
+                yield clk.posedge
+                sel_start = ((2**(4)-1) << offset % 4) & (2**(4)-1)
+                sel_end = ((2**(4)-1) >> (4 - (((offset + int(length/1) - 1) % 4) + 1)))
+                cycles = int((length + 4-1 + (offset % 4)) / 4)
+                i = 1
+                
+                port0_cyc_i.next = 1
 
-                yield port0_cyc_i.negedge
+                port0_stb_i.next = 1
+                port0_we_i.next = 1
+                port0_adr_i.next = 256*(16*offset+length)
+                val = 0
+                for j in range(4):
+                    if j >= offset % 4 and (cycles > 1 or j < (((offset + int(length/1) - 1) % 4) + 1)):
+                        val |= (0x11 * i) << j*8
+                        i += 1
+                port0_dat_i.next = val
+                if cycles == 1:
+                    port0_sel_i.next = sel_start & sel_end
+                else:
+                    port0_sel_i.next = sel_start
+
+                yield clk.posedge
+                while not port0_ack_o:
+                    yield clk.posedge
+
+                port0_we_i.next = 0
+                port0_stb_i.next = 0
+
+                for k in range(1,cycles-1):
+                    yield clk.posedge
+                    port0_stb_i.next = 1
+                    port0_we_i.next = 1
+                    port0_adr_i.next = 256*(16*offset+length)+4*k
+                    val = 0
+                    for j in range(4):
+                        val |= (0x11 * i) << j*8
+                        i += 1
+                    port0_dat_i.next = val
+                    port0_sel_i.next = 2**(4)-1
+
+                    yield clk.posedge
+                    while not port0_ack_o:
+                        yield clk.posedge
+
+                    port0_we_i.next = 0
+                    port0_stb_i.next = 0
+
+                if cycles > 1:
+                    yield clk.posedge
+                    port0_stb_i.next = 1
+                    port0_we_i.next = 1
+                    port0_adr_i.next = 256*(16*offset+length)+4*(cycles-1)
+                    val = 0
+                    for j in range(4):
+                        if j < (((offset + int(length/1) - 1) % 4) + 1):
+                            val |= (0x11 * i) << j*8
+                            i += 1
+                    port0_dat_i.next = val
+                    port0_sel_i.next = sel_end
+
+                    yield clk.posedge
+                    while not port0_ack_o:
+                        yield clk.posedge
+
+                    port0_we_i.next = 0
+                    port0_stb_i.next = 0
+
+                port0_we_i.next = 0
+                port0_stb_i.next = 0
+
+                port0_cyc_i.next = 0
+
                 yield clk.posedge
                 yield clk.posedge
 
@@ -168,27 +243,9 @@ def bench():
 
         yield delay(100)
 
-        yield clk.posedge
-        print("test 6: various reads")
-        current_test.next = 6
-
-        for length in range(1,8):
-            for offset in range(4):
-                wb_master_inst.init_read(256*(16*offset+length)+offset, length)
-
-                yield port0_cyc_i.negedge
-                yield clk.posedge
-                yield clk.posedge
-
-                data = wb_master_inst.get_read_data()
-                assert data[0] == 256*(16*offset+length)+offset
-                assert data[1] == b'\x11\x22\x33\x44\x55\x66\x77\x88'[0:length]
-
-        yield delay(100)
-
         raise StopSimulation
 
-    return wb_master_logic, wb_ram_port0, clkgen, check
+    return wb_ram_port0, clkgen, check
 
 def test_bench():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
