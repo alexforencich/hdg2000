@@ -27,9 +27,9 @@ THE SOFTWARE.
 `timescale 1ns / 1ps
 
 /*
- * Testbench for wb_reg
+ * Testbench for wb_mux_2
  */
-module test_wb_reg;
+module test_wb_mux_2;
 
 // Parameters
 parameter DATA_WIDTH = 32;
@@ -47,22 +47,36 @@ reg wbm_we_i = 0;
 reg [SELECT_WIDTH-1:0] wbm_sel_i = 0;
 reg wbm_stb_i = 0;
 reg wbm_cyc_i = 0;
-reg [DATA_WIDTH-1:0] wbs_dat_i = 0;
-reg wbs_ack_i = 0;
-reg wbs_err_i = 0;
-reg wbs_rty_i = 0;
+reg [DATA_WIDTH-1:0] wbs0_dat_i = 0;
+reg wbs0_ack_i = 0;
+reg wbs0_err_i = 0;
+reg wbs0_rty_i = 0;
+reg [ADDR_WIDTH-1:0] wbs0_addr = 0;
+reg [ADDR_WIDTH-1:0] wbs0_addr_msk = 0;
+reg [DATA_WIDTH-1:0] wbs1_dat_i = 0;
+reg wbs1_ack_i = 0;
+reg wbs1_err_i = 0;
+reg wbs1_rty_i = 0;
+reg [ADDR_WIDTH-1:0] wbs1_addr = 0;
+reg [ADDR_WIDTH-1:0] wbs1_addr_msk = 0;
 
 // Outputs
 wire [DATA_WIDTH-1:0] wbm_dat_o;
 wire wbm_ack_o;
 wire wbm_err_o;
 wire wbm_rty_o;
-wire [ADDR_WIDTH-1:0] wbs_adr_o;
-wire [DATA_WIDTH-1:0] wbs_dat_o;
-wire wbs_we_o;
-wire [SELECT_WIDTH-1:0] wbs_sel_o;
-wire wbs_stb_o;
-wire wbs_cyc_o;
+wire [ADDR_WIDTH-1:0] wbs0_adr_o;
+wire [DATA_WIDTH-1:0] wbs0_dat_o;
+wire wbs0_we_o;
+wire [SELECT_WIDTH-1:0] wbs0_sel_o;
+wire wbs0_stb_o;
+wire wbs0_cyc_o;
+wire [ADDR_WIDTH-1:0] wbs1_adr_o;
+wire [DATA_WIDTH-1:0] wbs1_dat_o;
+wire wbs1_we_o;
+wire [SELECT_WIDTH-1:0] wbs1_sel_o;
+wire wbs1_stb_o;
+wire wbs1_cyc_o;
 
 initial begin
     // myhdl integration
@@ -75,27 +89,41 @@ initial begin
                 wbm_sel_i,
                 wbm_stb_i,
                 wbm_cyc_i,
-                wbs_dat_i,
-                wbs_ack_i,
-                wbs_err_i,
-                wbs_rty_i);
+                wbs0_dat_i,
+                wbs0_ack_i,
+                wbs0_err_i,
+                wbs0_rty_i,
+                wbs0_addr,
+                wbs0_addr_msk,
+                wbs1_dat_i,
+                wbs1_ack_i,
+                wbs1_err_i,
+                wbs1_rty_i,
+                wbs1_addr,
+                wbs1_addr_msk);
     $to_myhdl(wbm_dat_o,
               wbm_ack_o,
               wbm_err_o,
               wbm_rty_o,
-              wbs_adr_o,
-              wbs_dat_o,
-              wbs_we_o,
-              wbs_sel_o,
-              wbs_stb_o,
-              wbs_cyc_o);
+              wbs0_adr_o,
+              wbs0_dat_o,
+              wbs0_we_o,
+              wbs0_sel_o,
+              wbs0_stb_o,
+              wbs0_cyc_o,
+              wbs1_adr_o,
+              wbs1_dat_o,
+              wbs1_we_o,
+              wbs1_sel_o,
+              wbs1_stb_o,
+              wbs1_cyc_o);
 
     // dump file
-    $dumpfile("test_wb_reg.lxt");
-    $dumpvars(0, test_wb_reg);
+    $dumpfile("test_wb_mux_2.lxt");
+    $dumpvars(0, test_wb_mux_2);
 end
 
-wb_reg #(
+wb_mux_2 #(
     .DATA_WIDTH(DATA_WIDTH),
     .ADDR_WIDTH(ADDR_WIDTH),
     .SELECT_WIDTH(SELECT_WIDTH)
@@ -113,16 +141,30 @@ UUT (
     .wbm_err_o(wbm_err_o),
     .wbm_rty_o(wbm_rty_o),
     .wbm_cyc_i(wbm_cyc_i),
-    .wbs_adr_o(wbs_adr_o),
-    .wbs_dat_i(wbs_dat_i),
-    .wbs_dat_o(wbs_dat_o),
-    .wbs_we_o(wbs_we_o),
-    .wbs_sel_o(wbs_sel_o),
-    .wbs_stb_o(wbs_stb_o),
-    .wbs_ack_i(wbs_ack_i),
-    .wbs_err_i(wbs_err_i),
-    .wbs_rty_i(wbs_rty_i),
-    .wbs_cyc_o(wbs_cyc_o)
+    .wbs0_adr_o(wbs0_adr_o),
+    .wbs0_dat_i(wbs0_dat_i),
+    .wbs0_dat_o(wbs0_dat_o),
+    .wbs0_we_o(wbs0_we_o),
+    .wbs0_sel_o(wbs0_sel_o),
+    .wbs0_stb_o(wbs0_stb_o),
+    .wbs0_ack_i(wbs0_ack_i),
+    .wbs0_err_i(wbs0_err_i),
+    .wbs0_rty_i(wbs0_rty_i),
+    .wbs0_cyc_o(wbs0_cyc_o),
+    .wbs0_addr(wbs0_addr),
+    .wbs0_addr_msk(wbs0_addr_msk),
+    .wbs1_adr_o(wbs1_adr_o),
+    .wbs1_dat_i(wbs1_dat_i),
+    .wbs1_dat_o(wbs1_dat_o),
+    .wbs1_we_o(wbs1_we_o),
+    .wbs1_sel_o(wbs1_sel_o),
+    .wbs1_stb_o(wbs1_stb_o),
+    .wbs1_ack_i(wbs1_ack_i),
+    .wbs1_err_i(wbs1_err_i),
+    .wbs1_rty_i(wbs1_rty_i),
+    .wbs1_cyc_o(wbs1_cyc_o),
+    .wbs1_addr(wbs1_addr),
+    .wbs1_addr_msk(wbs1_addr_msk)
 );
 
 endmodule
