@@ -16,8 +16,12 @@ SYN_FILES += rtl/reset_stretch.v
 SYN_FILES += rtl/ddr2.v
 SYN_FILES += rtl/ddr2_clock.v
 SYN_FILES += rtl/axis_spi_slave.v
-SYN_FILES += rtl/soc_interface.v
+SYN_FILES += rtl/soc_interface_wb.v
+SYN_FILES += rtl/wb_mcb.v
 SYN_FILES += rtl/srl_fifo_reg.v
+SYN_FILES += lib/wb/rtl/wb_mux_3.v
+SYN_FILES += lib/wb/rtl/wb_async_reg.v
+SYN_FILES += lib/wb/rtl/wb_ram.v
 SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/memc_wrapper.v
 SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/mcb_controller/iodrp_controller.v
 SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/mcb_controller/iodrp_mcb_controller.v
@@ -30,6 +34,7 @@ SYN_FILES += coregen/ddr2/ddr2/user_design/rtl/mcb_controller/mcb_ui_top.v
 UCF_FILES = fpga.ucf
 UCF_FILES += clock.ucf
 UCF_FILES += ddr2.ucf
+UCF_FILES += mcb_reg_loc.ucf
 
 # NGC paths for ngdbuild
 NGC_PATHS = 
