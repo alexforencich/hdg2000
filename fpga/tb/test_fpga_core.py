@@ -36,8 +36,12 @@ srcs = []
 
 srcs.append("../rtl/%s.v" % module)
 srcs.append("../rtl/axis_spi_slave.v")
-srcs.append("../rtl/soc_interface.v")
+srcs.append("../rtl/soc_interface_wb.v")
+srcs.append("../rtl/wb_mcb.v")
 srcs.append("../rtl/srl_fifo_reg.v")
+srcs.append("../lib/wb/rtl/wb_mux_3.v")
+srcs.append("../lib/wb/rtl/wb_async_reg.v")
+srcs.append("../lib/wb/rtl/wb_ram.v")
 srcs.append("test_%s.v" % module)
 
 src = ' '.join(srcs)
@@ -1556,6 +1560,41 @@ def bench():
 
         # read data
         test_frame = bytearray('\xA1\x00\x00\x00\x20'+'\x00'*10)
+        master_tx_queue.put(test_frame)
+        yield clk_250mhz_int.posedge
+
+        # wait for end of transaction
+        yield cntrl_cs.posedge
+        yield delay(100)
+        yield clk_250mhz_int.posedge
+
+        rx_frame = bytearray(master_rx_queue.get(False))
+        print(repr(rx_frame))
+        assert rx_frame.find('\x01\x11\x22\x33\x44\x55\x66\x77') >= 0
+
+        yield delay(100)
+
+        yield clk_250mhz_int.posedge
+        print("test 2: Control registers")
+        current_test.next = 2
+
+        # write data
+        test_frame = bytearray('\xBF\x00\x00\x00\x00\x11\x22\x33\x44\x55\x66\x77')
+        master_tx_queue.put(test_frame)
+        yield clk_250mhz_int.posedge
+
+        # wait for end of transaction
+        yield cntrl_cs.posedge
+        yield delay(100)
+        yield clk_250mhz_int.posedge
+
+        # drop RX frame
+        master_rx_queue.get(False)
+
+        yield delay(100)
+
+        # read data
+        test_frame = bytearray('\xAF\x00\x00\x00\x00'+'\x00'*10)
         master_tx_queue.put(test_frame)
         yield clk_250mhz_int.posedge
 
