@@ -120,9 +120,9 @@ fpgasim: $(FPGA_TOP)_sim.v
 
 ########################### ISE MAP ###################################
 ifeq ($(FPGA_ARCH),spartan6)
-  MAP_OPTS= -register_duplication on -timing -xe n
+  MAP_OPTS= -register_duplication on -timing
 else
-  MAP_OPTS= -cm speed -register_duplication on -timing -xe n -pr b
+  MAP_OPTS= -cm speed -register_duplication on -timing -pr b
 endif
 
 %_map.ncd: %.ngd
