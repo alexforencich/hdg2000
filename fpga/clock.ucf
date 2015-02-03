@@ -14,6 +14,7 @@ NET "mcb_drp_clk" TNM = "ffs_mcb_drp_clk";
 TIMESPEC "TS_10mhz_int_bufg_to_250mhz_int" = FROM "ffs_10mhz_int_bufg" TO "ffs_250mhz_int" 10 ns;
 TIMESPEC "TS_10mhz_ext_bufg_to_250mhz_int" = FROM "ffs_10mhz_ext_bufg" TO "ffs_250mhz_int" 10 ns;
 TIMESPEC "TS_250mhz_ext_to_250mhz_int" = FROM "ffs_250mhz_ext" TO "ffs_250mhz_int" 10 ns;
+TIMESPEC "TS_250mhz_to_250mhz_int" = FROM "ffs_250mhz" TO "ffs_250mhz_int" 10 ns;
 TIMESPEC "TS_250mhz_int_to_250mhz" = FROM "ffs_250mhz_int" TO "ffs_250mhz" 10 ns;
 TIMESPEC "TS_250mhz_ext_to_250mhz" = FROM "ffs_250mhz_ext" TO "ffs_250mhz" 10 ns;
 TIMESPEC "TS_250mhz_int_to_250mhz_to_pll" = FROM "ffs_250mhz_int" TO "ffs_250mhz_to_pll" 10 ns;
