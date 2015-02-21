@@ -803,7 +803,7 @@ wb_mux_inst (
 
 assign ram1_wb_err_o = 0;
 
-wb_mcb
+wb_mcb_32
 wb_mcb_ram1_inst (
     .clk(clk_250mhz_int),
     .rst(rst_250mhz_int),
@@ -845,7 +845,7 @@ wb_mcb_ram1_inst (
 
 assign ram2_wb_err_o = 0;
 
-wb_mcb
+wb_mcb_32
 wb_mcb_ram2_inst (
     .clk(clk_250mhz_int),
     .rst(rst_250mhz_int),

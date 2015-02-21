@@ -29,7 +29,7 @@ THE SOFTWARE.
 /*
  * Wishbone wrapper for MCB interface
  */
-module wb_mcb
+module wb_mcb_32
 (
     input  wire        clk,
     input  wire        rst,

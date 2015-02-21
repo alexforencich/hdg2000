@@ -27,9 +27,9 @@ THE SOFTWARE.
 `timescale 1ns / 1ps
 
 /*
- * Testbench for wb_mcb
+ * Testbench for wb_mcb_32
  */
-module test_wb_mcb;
+module test_wb_mcb_32;
 
 // Parameters
 
@@ -112,11 +112,11 @@ initial begin
               mcb_rd_en);
 
     // dump file
-    $dumpfile("test_wb_mcb.lxt");
-    $dumpvars(0, test_wb_mcb);
+    $dumpfile("test_wb_mcb_32.lxt");
+    $dumpvars(0, test_wb_mcb_32);
 end
 
-wb_mcb
+wb_mcb_32
 UUT (
     .clk(clk),
     .rst(rst),

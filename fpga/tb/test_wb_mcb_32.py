@@ -29,7 +29,7 @@ import os
 import wb
 import mcb
 
-module = 'wb_mcb'
+module = 'wb_mcb_32'
 
 srcs = []
 
@@ -40,7 +40,7 @@ src = ' '.join(srcs)
 
 build_cmd = "iverilog -o test_%s.vvp %s" % (module, src)
 
-def dut_wb_mcb(clk,
+def dut_wb_mcb_32(clk,
                rst,
                current_test,
                wb_adr_i,
@@ -206,7 +206,7 @@ def bench():
                                     name='port0')
 
     # DUT
-    dut = dut_wb_mcb(clk,
+    dut = dut_wb_mcb_32(clk,
                      rst,
                      current_test,
                      wb_adr_i,
