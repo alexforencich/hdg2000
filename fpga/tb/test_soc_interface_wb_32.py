@@ -31,7 +31,7 @@ import axis_ep
 import mcb
 import wb
 
-module = 'soc_interface_wb'
+module = 'soc_interface_wb_32'
 
 srcs = []
 
@@ -42,7 +42,7 @@ src = ' '.join(srcs)
 
 build_cmd = "iverilog -o test_%s.vvp %s" % (module, src)
 
-def dut_soc_interface(clk,
+def dut_soc_interface_32(clk,
                  rst,
                  current_test,
 
@@ -171,7 +171,7 @@ def bench():
                                            name='wb_ram')
 
     # DUT
-    dut = dut_soc_interface(clk,
+    dut = dut_soc_interface_32(clk,
                         rst,
                         current_test,
 

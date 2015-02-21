@@ -36,7 +36,7 @@ srcs = []
 
 srcs.append("../rtl/%s.v" % module)
 srcs.append("../rtl/axis_spi_slave.v")
-srcs.append("../rtl/soc_interface_wb.v")
+srcs.append("../rtl/soc_interface_wb_32.v")
 srcs.append("../rtl/wb_mcb.v")
 srcs.append("../rtl/srl_fifo_reg.v")
 srcs.append("../lib/wb/rtl/wb_mux_3.v")

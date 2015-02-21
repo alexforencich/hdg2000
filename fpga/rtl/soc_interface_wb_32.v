@@ -29,7 +29,7 @@ THE SOFTWARE.
 /*
  * SoC Interface
  */
-module soc_interface_wb
+module soc_interface_wb_32
 (
     input  wire        clk,
     input  wire        rst,

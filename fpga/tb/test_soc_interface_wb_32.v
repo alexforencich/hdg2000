@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 `timescale 1 ns / 1 ps
 
-module test_soc_interface_wb;
+module test_soc_interface_wb_32;
 
 // Inputs
 reg clk = 0;
@@ -82,11 +82,11 @@ initial begin
                 busy);
 
     // dump file
-    $dumpfile("test_soc_interface_wb.lxt");
-    $dumpvars(0, test_soc_interface_wb);
+    $dumpfile("test_soc_interface_wb_32.lxt");
+    $dumpvars(0, test_soc_interface_wb_32);
 end
 
-soc_interface_wb
+soc_interface_wb_32
 UUT (
     .clk(clk),
     .rst(rst),

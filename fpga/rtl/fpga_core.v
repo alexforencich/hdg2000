@@ -713,7 +713,7 @@ spi_slave_inst (
     .busy()
 );
 
-soc_interface_wb
+soc_interface_wb_32
 soc_interface_wb_inst (
     .clk(clk_250mhz_int),
     .rst(rst_250mhz_int),
