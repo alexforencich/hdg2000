@@ -639,50 +639,45 @@ wire cntrl_tx_tready;
 wire cntrl_tx_tlast;
 
 wire [35:0] wbm_adr_o;
-wire [31:0] wbm_dat_i;
-wire [31:0] wbm_dat_o;
+wire [7:0] wbm_dat_i;
+wire [7:0] wbm_dat_o;
 wire wbm_we_o;
-wire [3:0] wbm_sel_o;
 wire wbm_stb_o;
 wire wbm_ack_i;
 wire wbm_err_i;
 wire wbm_cyc_o;
 
 wire [31:0] ram1_wb_adr_i;
-wire [31:0] ram1_wb_dat_i;
-wire [31:0] ram1_wb_dat_o;
+wire [7:0] ram1_wb_dat_i;
+wire [7:0] ram1_wb_dat_o;
 wire ram1_wb_we_i;
-wire [3:0] ram1_wb_sel_i;
 wire ram1_wb_stb_i;
 wire ram1_wb_ack_o;
 wire ram1_wb_err_o;
 wire ram1_wb_cyc_i;
 
 wire [31:0] ram2_wb_adr_i;
-wire [31:0] ram2_wb_dat_i;
-wire [31:0] ram2_wb_dat_o;
+wire [7:0] ram2_wb_dat_i;
+wire [7:0] ram2_wb_dat_o;
 wire ram2_wb_we_i;
-wire [3:0] ram2_wb_sel_i;
 wire ram2_wb_stb_i;
 wire ram2_wb_ack_o;
 wire ram2_wb_err_o;
 wire ram2_wb_cyc_i;
 
 wire [31:0] ctrl_wb_adr_i;
-wire [31:0] ctrl_wb_dat_i;
-wire [31:0] ctrl_wb_dat_o;
+wire [7:0] ctrl_wb_dat_i;
+wire [7:0] ctrl_wb_dat_o;
 wire ctrl_wb_we_i;
-wire [3:0] ctrl_wb_sel_i;
 wire ctrl_wb_stb_i;
 wire ctrl_wb_ack_o;
 wire ctrl_wb_err_o;
 wire ctrl_wb_cyc_i;
 
 wire [31:0] ctrl_int_wb_adr_i;
-wire [31:0] ctrl_int_wb_dat_i;
-wire [31:0] ctrl_int_wb_dat_o;
+wire [7:0] ctrl_int_wb_dat_i;
+wire [7:0] ctrl_int_wb_dat_o;
 wire ctrl_int_wb_we_i;
-wire [3:0] ctrl_int_wb_sel_i;
 wire ctrl_int_wb_stb_i;
 wire ctrl_int_wb_ack_o;
 wire ctrl_int_wb_err_o;
@@ -713,7 +708,7 @@ spi_slave_inst (
     .busy()
 );
 
-soc_interface_wb_32
+soc_interface_wb_8
 soc_interface_wb_inst (
     .clk(clk_250mhz_int),
     .rst(rst_250mhz_int),
@@ -732,7 +727,6 @@ soc_interface_wb_inst (
     .wb_dat_i(wbm_dat_i),
     .wb_dat_o(wbm_dat_o),
     .wb_we_o(wbm_we_o),
-    .wb_sel_o(wbm_sel_o),
     .wb_stb_o(wbm_stb_o),
     .wb_ack_i(wbm_ack_i),
     .wb_err_i(wbm_err_i),
@@ -742,9 +736,8 @@ soc_interface_wb_inst (
 );
 
 wb_mux_3 #(
-    .DATA_WIDTH(32),
-    .ADDR_WIDTH(36),
-    .SELECT_WIDTH(4)
+    .DATA_WIDTH(8),
+    .ADDR_WIDTH(36)
 )
 wb_mux_inst (
     .clk(clk_250mhz_int),
@@ -754,7 +747,7 @@ wb_mux_inst (
     .wbm_dat_i(wbm_dat_o),
     .wbm_dat_o(wbm_dat_i),
     .wbm_we_i(wbm_we_o),
-    .wbm_sel_i(wbm_sel_o),
+    .wbm_sel_i(1),
     .wbm_stb_i(wbm_stb_o),
     .wbm_ack_o(wbm_ack_i),
     .wbm_err_o(wbm_err_i),
@@ -765,7 +758,7 @@ wb_mux_inst (
     .wbs0_dat_i(ram1_wb_dat_o),
     .wbs0_dat_o(ram1_wb_dat_i),
     .wbs0_we_o(ram1_wb_we_i),
-    .wbs0_sel_o(ram1_wb_sel_i),
+    .wbs0_sel_o(),
     .wbs0_stb_o(ram1_wb_stb_i),
     .wbs0_ack_i(ram1_wb_ack_o),
     .wbs0_err_i(ram1_wb_err_o),
@@ -778,7 +771,7 @@ wb_mux_inst (
     .wbs1_dat_i(ram2_wb_dat_o),
     .wbs1_dat_o(ram2_wb_dat_i),
     .wbs1_we_o(ram2_wb_we_i),
-    .wbs1_sel_o(ram2_wb_sel_i),
+    .wbs1_sel_o(),
     .wbs1_stb_o(ram2_wb_stb_i),
     .wbs1_ack_i(ram2_wb_ack_o),
     .wbs1_err_i(ram2_wb_err_o),
@@ -791,7 +784,7 @@ wb_mux_inst (
     .wbs2_dat_i(ctrl_wb_dat_o),
     .wbs2_dat_o(ctrl_wb_dat_i),
     .wbs2_we_o(ctrl_wb_we_i),
-    .wbs2_sel_o(ctrl_wb_sel_i),
+    .wbs2_sel_o(),
     .wbs2_stb_o(ctrl_wb_stb_i),
     .wbs2_ack_i(ctrl_wb_ack_o),
     .wbs2_err_i(ctrl_wb_err_o),
@@ -803,7 +796,7 @@ wb_mux_inst (
 
 assign ram1_wb_err_o = 0;
 
-wb_mcb_32
+wb_mcb_8
 wb_mcb_ram1_inst (
     .clk(clk_250mhz_int),
     .rst(rst_250mhz_int),
@@ -812,7 +805,6 @@ wb_mcb_ram1_inst (
     .wb_dat_i(ram1_wb_dat_i),
     .wb_dat_o(ram1_wb_dat_o),
     .wb_we_i(ram1_wb_we_i),
-    .wb_sel_i(ram1_wb_sel_i),
     .wb_stb_i(ram1_wb_stb_i),
     .wb_ack_o(ram1_wb_ack_o),
     .wb_cyc_i(ram1_wb_cyc_i),
@@ -845,7 +837,7 @@ wb_mcb_ram1_inst (
 
 assign ram2_wb_err_o = 0;
 
-wb_mcb_32
+wb_mcb_8
 wb_mcb_ram2_inst (
     .clk(clk_250mhz_int),
     .rst(rst_250mhz_int),
@@ -854,7 +846,6 @@ wb_mcb_ram2_inst (
     .wb_dat_i(ram2_wb_dat_i),
     .wb_dat_o(ram2_wb_dat_o),
     .wb_we_i(ram2_wb_we_i),
-    .wb_sel_i(ram2_wb_sel_i),
     .wb_stb_i(ram2_wb_stb_i),
     .wb_ack_o(ram2_wb_ack_o),
     .wb_cyc_i(ram2_wb_cyc_i),
@@ -886,9 +877,8 @@ wb_mcb_ram2_inst (
 );
 
 wb_async_reg #(
-    .DATA_WIDTH(32),
-    .ADDR_WIDTH(32),
-    .SELECT_WIDTH(4)
+    .DATA_WIDTH(8),
+    .ADDR_WIDTH(32)
 )
 wb_async_reg_inst (
     .wbm_clk(clk_250mhz_int),
@@ -897,7 +887,7 @@ wb_async_reg_inst (
     .wbm_dat_i(ctrl_wb_dat_i),
     .wbm_dat_o(ctrl_wb_dat_o),
     .wbm_we_i(ctrl_wb_we_i),
-    .wbm_sel_i(ctrl_wb_sel_i),
+    .wbm_sel_i(1),
     .wbm_stb_i(ctrl_wb_stb_i),
     .wbm_ack_o(ctrl_wb_ack_o),
     .wbm_err_o(ctrl_wb_err_o),
@@ -909,7 +899,7 @@ wb_async_reg_inst (
     .wbs_dat_i(ctrl_int_wb_dat_o),
     .wbs_dat_o(ctrl_int_wb_dat_i),
     .wbs_we_o(ctrl_int_wb_we_i),
-    .wbs_sel_o(ctrl_int_wb_sel_i),
+    .wbs_sel_o(),
     .wbs_stb_o(ctrl_int_wb_stb_i),
     .wbs_ack_i(ctrl_int_wb_ack_o),
     .wbs_err_i(ctrl_int_wb_err_o),
@@ -920,9 +910,8 @@ wb_async_reg_inst (
 assign ctrl_int_wb_err_o = 0;
 
 wb_ram #(
-    .DATA_WIDTH(32),
-    .ADDR_WIDTH(8),
-    .SELECT_WIDTH(4)
+    .DATA_WIDTH(8),
+    .ADDR_WIDTH(10)
 )
 wb_ram_inst(
     .clk(clk_250mhz),
@@ -930,7 +919,7 @@ wb_ram_inst(
     .dat_i(ctrl_int_wb_dat_i),
     .dat_o(ctrl_int_wb_dat_o),
     .we_i(ctrl_int_wb_we_i),
-    .sel_i(ctrl_int_wb_sel_i),
+    .sel_i(1),
     .stb_i(ctrl_int_wb_stb_i),
     .ack_o(ctrl_int_wb_ack_o),
     .cyc_i(ctrl_int_wb_cyc_i)
