@@ -33,7 +33,8 @@ module axis_frame_fifo_64 #
 (
     parameter ADDR_WIDTH = 12,
     parameter DATA_WIDTH = 64,
-    parameter KEEP_WIDTH = (DATA_WIDTH/8)
+    parameter KEEP_WIDTH = (DATA_WIDTH/8),
+    parameter DROP_WHEN_FULL = 0
 )
 (
     input  wire                   clk,
@@ -63,16 +64,18 @@ reg [ADDR_WIDTH:0] wr_ptr = {ADDR_WIDTH+1{1'b0}};
 reg [ADDR_WIDTH:0] wr_ptr_cur = {ADDR_WIDTH+1{1'b0}};
 reg [ADDR_WIDTH:0] rd_ptr = {ADDR_WIDTH+1{1'b0}};
 
-reg [DATA_WIDTH+KEEP_WIDTH+2-1:0] data_out_reg = {1'b0, {KEEP_WIDTH{1'b0}}, {DATA_WIDTH{1'b0}}};
+reg drop_frame = 1'b0;
+
+reg [DATA_WIDTH+KEEP_WIDTH+1-1:0] data_out_reg = {1'b0, {KEEP_WIDTH{1'b0}}, {DATA_WIDTH{1'b0}}};
 
 //(* RAM_STYLE="BLOCK" *)
-reg [DATA_WIDTH+KEEP_WIDTH+2-1:0] mem[(2**ADDR_WIDTH)-1:0];
+reg [DATA_WIDTH+KEEP_WIDTH+1-1:0] mem[(2**ADDR_WIDTH)-1:0];
 
 reg output_read = 1'b0;
 
 reg output_axis_tvalid_reg = 1'b0;
 
-wire [DATA_WIDTH+KEEP_WIDTH+2-1:0] data_in = {input_axis_tlast, input_axis_tkeep, input_axis_tdata};
+wire [DATA_WIDTH+KEEP_WIDTH+1-1:0] data_in = {input_axis_tlast, input_axis_tkeep, input_axis_tdata};
 
 // full when first MSB different but rest same
 wire full = ((wr_ptr[ADDR_WIDTH] != rd_ptr[ADDR_WIDTH]) &&
@@ -83,23 +86,27 @@ wire empty = wr_ptr == rd_ptr;
 wire full_cur = ((wr_ptr[ADDR_WIDTH] != wr_ptr_cur[ADDR_WIDTH]) &&
                  (wr_ptr[ADDR_WIDTH-1:0] == wr_ptr_cur[ADDR_WIDTH-1:0]));
 
-wire write = input_axis_tvalid & ~full;
+wire write = input_axis_tvalid & (~full | DROP_WHEN_FULL);
 wire read = (output_axis_tready | ~output_axis_tvalid_reg) & ~empty;
 
 assign {output_axis_tlast, output_axis_tkeep, output_axis_tdata} = data_out_reg;
 
-assign input_axis_tready = ~full;
+assign input_axis_tready = (~full | DROP_WHEN_FULL);
 assign output_axis_tvalid = output_axis_tvalid_reg;
 
 // write
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         wr_ptr <= 0;
+        wr_ptr_cur <= 0;
+        drop_frame <= 0;
     end else if (write) begin
-        if (full_cur) begin
+        if (full | full_cur | drop_frame) begin
             // buffer full, hold current pointer, drop packet at end
+            drop_frame <= 1;
             if (input_axis_tlast) begin
                 wr_ptr_cur <= wr_ptr;
+                drop_frame <= 0;
             end
         end else begin
             mem[wr_ptr_cur[ADDR_WIDTH-1:0]] <= data_in;
