@@ -27,69 +27,66 @@ THE SOFTWARE.
 `timescale 1ns / 1ps
 
 /*
- * Testbench for phase_accumulator
+ * Testbench for cic_decimator
  */
-module test_phase_accumulator;
+module test_cic_decimator;
 
 // Parameters
-parameter WIDTH = 32;
-parameter INITIAL_PHASE = 0;
-parameter INITIAL_PHASE_STEP = 0;
+parameter WIDTH = 16;
+parameter RMAX = 4;
+parameter M = 1;
+parameter N = 2;
+parameter REG_WIDTH = WIDTH+$clog2((RMAX*M)**N);
 
 // Inputs
 reg clk = 0;
 reg rst = 0;
 reg [7:0] current_test = 0;
 
-reg [WIDTH-1:0] input_phase_tdata = 0;
-reg input_phase_tvalid = 0;
-reg [WIDTH-1:0] input_phase_step_tdata = 0;
-reg input_phase_step_tvalid = 0;
-reg output_phase_tready = 0;
+reg [WIDTH-1:0] input_tdata = 0;
+reg input_tvalid = 0;
+reg output_tready = 0;
+reg [$clog2(RMAX+1)-1:0] rate = 0;
 
 // Outputs
-wire input_phase_tready;
-wire input_phase_step_tready;
-wire [WIDTH-1:0] output_phase_tdata;
-wire output_phase_tvalid;
+wire input_tready;
+wire [REG_WIDTH-1:0] output_tdata;
+wire output_tvalid;
 
 initial begin
     // myhdl integration
     $from_myhdl(clk,
                 rst,
                 current_test,
-                input_phase_tdata,
-                input_phase_tvalid,
-                input_phase_step_tdata,
-                input_phase_step_tvalid,
-                output_phase_tready);
-    $to_myhdl(input_phase_tready,
-              input_phase_step_tready,
-              output_phase_tdata,
-              output_phase_tvalid);
+                input_tdata,
+                input_tvalid,
+                output_tready,
+                rate);
+    $to_myhdl(input_tready,
+              output_tdata,
+              output_tvalid);
 
     // dump file
-    $dumpfile("test_phase_accumulator.lxt");
-    $dumpvars(0, test_phase_accumulator);
+    $dumpfile("test_cic_decimator.lxt");
+    $dumpvars(0, test_cic_decimator);
 end
 
-phase_accumulator #(
+cic_decimator #(
     .WIDTH(WIDTH),
-    .INITIAL_PHASE(INITIAL_PHASE),
-    .INITIAL_PHASE_STEP(INITIAL_PHASE_STEP)
+    .RMAX(RMAX),
+    .M(M),
+    .N(N)
 )
 UUT (
     .clk(clk),
     .rst(rst),
-    .input_phase_tdata(input_phase_tdata),
-    .input_phase_tvalid(input_phase_tvalid),
-    .input_phase_tready(input_phase_tready),
-    .input_phase_step_tdata(input_phase_step_tdata),
-    .input_phase_step_tvalid(input_phase_step_tvalid),
-    .input_phase_step_tready(input_phase_step_tready),
-    .output_phase_tdata(output_phase_tdata),
-    .output_phase_tvalid(output_phase_tvalid),
-    .output_phase_tready(output_phase_tready)
+    .input_tdata(input_tdata),
+    .input_tvalid(input_tvalid),
+    .input_tready(input_tready),
+    .output_tdata(output_tdata),
+    .output_tvalid(output_tvalid),
+    .output_tready(output_tready),
+    .rate(rate)
 );
 
 endmodule
